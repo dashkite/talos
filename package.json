@@ -1,0 +1,46 @@
+{
+  "name": "@dashkite/talos",
+  "version": "0.0.0",
+  "description": "state machines with an emphasis on compositional flows",
+  "keywords": [],
+  "homepage": "https://github.com/dashkite/talos#readme",
+  "bugs": {
+    "url": "https://github.com/dashkite/talos/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dashkite/talos.git"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": "David Harper",
+  "exports": {
+    ".": {
+      "node": "./build/node/src/index.js",
+      "browser": "./build/browser/src/index.js"
+    },
+    "./*": {
+      "node": "./build/node/src/*.js",
+      "browser": "./build/browser/src/*.js"
+    }
+  },
+  "main": "build/node/src/index.js",
+  "files": [
+    "build/browser/src",
+    "build/node/src"
+  ],
+  "scripts": {
+    "test": "genie test",
+    "build": "genie build"
+  },
+  "dependencies": {
+    "@dashkite/joy": "^0.3.16"
+  },
+  "devDependencies": {
+    "@dashkite/amen": "^0.2.0",
+    "@dashkite/amen-console": "^0.0.2",
+    "@dashkite/assert": "^0.1.4",
+    "@dashkite/genie": "^0.5.11",
+    "@dashkite/genie-presets": "^0.6.4",
+    "panda-confidential": "^3.1.2"
+  }
+}

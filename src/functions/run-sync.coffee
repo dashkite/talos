@@ -42,7 +42,6 @@ runSync = Fn.curry Fn.rtee ( graph, talos ) ->
         talos.halt()
         continue
     else
-      talos.error = Error.UnknownNext.create { vertex }
       talos.halt()
       continue
 

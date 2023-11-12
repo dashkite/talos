@@ -7,6 +7,25 @@ test = ( $ ) ->
   [
     await h.test "define graph", h.target "basic-sync", ->
       graph = $.lib.Graph.create [
+          start:
+            edges: [
+              acceptor:
+              transition:
+              next:
+
+              acceptor:
+              transition:
+              next:
+
+
+              acceptor:
+              transition:
+              next:
+            ]
+
+
+
+
           selector: $.start
           next: "first"
         ,

@@ -10,7 +10,8 @@ isSelector = oneOf [
   Type.isFunction 
 ]
 
-isNext = oneOf [ 
+isNext = oneOf [
+  Type.isUndefined
   Type.isString
   Type.isSymbol
   Type.isFunction

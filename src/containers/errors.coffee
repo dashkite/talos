@@ -13,6 +13,17 @@ class TalosError extends Error
   @isKind: Type.isKind @
 
 
+class SelectVertexError extends TalosError
+  constructor: ({ error }) ->
+    super message: "talos encountered an error while selecting vertex from graph"
+    @error = error
+
+  @create: ( options ) ->
+    new SelectVertexError options
+
+  @isType: Type.isType @
+
+
 class UnknownState extends TalosError
   constructor: ->
     super message: "talos cannot find the current state in this graph"
@@ -58,6 +69,7 @@ class NextError extends TalosError
 
 export {
   TalosError
+  SelectVertexError
   UnknownState
   UnknownNext
   ActionError

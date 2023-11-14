@@ -1,7 +1,8 @@
-var atHalt, atPause, atStart, halt, pause, start;
+var atCancel, atHalt, atPause, atStart, cancel, halt, pause, start;
 start = Symbol("start");
 halt = Symbol("halt");
 pause = Symbol("pause");
+cancel = Symbol("cancel");
 atStart = function (x) {
   return x === start;
 };
@@ -11,4 +12,7 @@ atHalt = function (x) {
 atPause = function (x) {
   return x === pause;
 };
-export { start, halt, pause, atStart, atHalt, atPause };
+atCancel = function (x) {
+  return x === cancel;
+};
+export { start, halt, pause, cancel, atStart, atHalt, atPause, atCancel };

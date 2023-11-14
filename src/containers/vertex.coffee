@@ -1,73 +1,53 @@
 import * as Meta from "@dashkite/joy/metaclass"
 import * as Type from "@dashkite/joy/type"
+import * as Value from "@dashkite/joy/value"
+import { generic } from "@dashkite/joy/generic"
 import { oneOf } from "../helpers"
+import { Edge } from "./edge"
 
 
-isSelector = oneOf [
+isState = oneOf [
   Type.isString
   Type.isSymbol
-  Type.isRegExp
-  Type.isFunction 
 ]
 
-isNext = oneOf [
-  Type.isUndefined
-  Type.isString
-  Type.isSymbol
-  Type.isFunction
-]
+create = generic 
+  name: "vertex create"
+  default: ( args... ) -> 
+    throw new Error "Vertex.create: input is malformed #{JSON.stringify args}"
 
-isAction = oneOf [
-  Type.isUndefined
-  Type.isFunction
-]
+generic create, isState, Type.isArray, ( state, edges ) ->
+  new Vertex
+    state: state
+    edges: ( Edge.create edge for edge in edges )
 
-verify = ( options ) ->
-  { selector, next, action } = options
+generic create, isState, Type.isObject, ( state, _vertex ) ->
+  create state, _vertex.edges
 
-  unless isSelector selector
-    throw new Error "Vertext.create: invalid selector, #{ selector }"
+generic create, isState, Type.isUndefined ( state, _null ) ->
+  create state, []
 
-  unless isNext next
-    throw new Error "Vertex.create: invalid next, #{ next }"
-
-  unless isAction action
-    throw new Error "Vertex.create: invalid action, #{ action }"
+generic create, isState, ( state ) ->
+  create state, []
 
 
 class Vertex
-  constructor: ({ @selector, @next, @action }) ->
-    @
+  constructor: ({ @state, @edges }) ->
 
   Meta.mixin @::, [
-    Meta.getters
-      test: ->
-        @_test ?= 
-          if Type.isString @selector
-            ( talos ) => @selector == talos.state
-          else if Type.isSymbol @selector
-            ( talos ) => @selector == talos.state 
-          else if Type.isRegExp @selector
-            ( talos ) => 
-              ( Type.isString talos.state ) && ( @selector.test talos.state )
-          else if Type.isRegularFunction @selector
-            ( talos ) => @selector talos, @
-          else if Type.isAsyncFunction @selector
-            ( talos ) => await @selector talos, @
-          else
-            throw new Error "Vertex#test unknown selector test, unable to match state"
-
-      hasAsyncSelector: -> Type.isAsyncFunction @test
+    Meta.getters {}
   ]
 
-  @create: ( options ) ->
-    verify options
-    new Vertex options
-
+  @create: create
   @isType: Type.isType @
 
+  clone: ->
+    state = Value.clone @state
+    edges = [ @edges... ]
+    new Vertex { state, edges }
 
 
 export {
+  isState
   Vertex
 }

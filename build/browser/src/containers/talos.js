@@ -1,31 +1,63 @@
-var Talos;
+var Talos, create, isError, isState;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
+import * as Value from "@dashkite/joy/value";
 import * as $ from "../internal/states.js";
+import { generic } from "@dashkite/joy/generic";
+import { oneOf } from "../helpers.js";
+import { TalosError } from "./errors.js";
+isState = oneOf([Type.isString, Type.isSymbol]);
+isError = oneOf([Type.isUndefined, TalosError.isType]);
+create = generic({
+  name: "talos create",
+  default: function (...args) {
+    throw new Error(`Talos.create: input is malformed ${JSON.stringify(args)}`);
+  }
+});
+generic(create, isState, Type.isObject, isError, function (state, context, error) {
+  return new Talos({
+    state,
+    context,
+    error
+  });
+});
+generic(create, function () {
+  return create($.start, {}, null);
+});
+generic(create, isState, Type.isObject, function (state, context) {
+  return create(state, context, null);
+});
+generic(create, isState, function (state) {
+  return create(state, {}, null);
+});
+generic(create, Type.isObject, function (context) {
+  return create($.start, context, null);
+});
 Talos = function () {
   class Talos {
     constructor({
       state: state1,
-      context
+      context: context1,
+      error: error1
     }) {
       this.state = state1;
-      this.context = context;
-      if (this.state == null) {
-        this.state = $.start;
-      }
-      if (this.context == null) {
-        this.context = {};
-      }
-      this.error = null;
-    }
-    static create(options = {}) {
-      return new Talos(options);
+      this.context = context1;
+      this.error = error1;
     }
     halt() {
       return this.state = $.halt;
     }
-    restart(state) {
-      return this.state = state != null ? state : this.start;
+    throw(error) {
+      this.halt();
+      return this.error = error != null ? error : TalosError.create();
+    }
+    reset(state) {
+      this.state = state != null ? state : $.start;
+      this.context = {};
+      return this.error = null;
+    }
+    clone() {
+      return create(Value.clone(this.state), Value.clone(this.context), this.error);
     }
   }
   ;
@@ -42,13 +74,11 @@ Talos = function () {
     failure: function () {
       return this.halted && this.error != null;
     },
-    paused: function () {
-      return $.atPause(this.state);
-    },
     running: function () {
-      return !this.paused;
+      return !this.halted;
     }
   })]);
+  Talos.create = create;
   Talos.isType = Type.isType(Talos);
   return Talos;
 }.call(this);

@@ -1,61 +1,43 @@
-var Graph, verify;
+var Graph, create;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
+import { generic } from "@dashkite/joy/generic";
 import { Vertex } from "./vertex.js";
-verify = function (ax) {
-  var a, i, len, results;
-  if (Type.isArray(ax)) {
-    results = [];
-    for (i = 0, len = ax.length; i < len; i++) {
-      a = ax[i];
-      if (Vertex.isType(a)) {
-        results.push(a);
-      } else if (Type.isObject(a)) {
-        results.push(Vertex.create(a));
-      } else {
-        throw new Error("Graph.create: array must include only vertices or vertex definitions");
-      }
-    }
-    return results;
-  } else {
-    throw new Error("Graph.create: input is malformed");
+create = generic({
+  name: "graph create",
+  default: function (...args) {
+    throw new Error(`Graph.create: input is malformed ${JSON.stringify(args)}`);
   }
-};
+});
+generic(create, Type.isObject, function (graph) {
+  var i, len, ref, state, vertex;
+  ref = Reflect.ownKeys(graph);
+  for (i = 0, len = ref.length; i < len; i++) {
+    state = ref[i];
+    vertex = graph[state];
+    graph[state] = Vertex.create(state, vertex);
+  }
+  return new Graph({
+    graph
+  });
+});
 Graph = function () {
   class Graph {
     constructor({
-      graph
+      graph: graph1
     }) {
-      this.graph = graph;
+      this.graph = graph1;
     }
-    static create(ax) {
-      return new Graph({
-        graph: verify(ax)
-      });
+    get(talos) {
+      return this.graph[talos.state];
     }
-    selectSync(talos) {
-      var i, len, ref, vertex;
-      ref = this.graph;
-      for (i = 0, len = ref.length; i < len; i++) {
-        vertex = ref[i];
-        if (vertex.test(talos) === true) {
-          return vertex;
-        }
-      }
-    }
-    async selectAsync(talos) {
-      var i, len, ref, vertex;
-      ref = this.graph;
-      for (i = 0, len = ref.length; i < len; i++) {
-        vertex = ref[i];
-        if ((await vertex.test(talos)) === true) {
-          return vertex;
-        }
-      }
+    has(talos) {
+      return this.graph[talos.state] != null;
     }
   }
   ;
   Meta.mixin(Graph.prototype, [Meta.getters({})]);
+  Graph.create = create;
   Graph.isType = Type.isType(Graph);
   return Graph;
 }.call(this);

@@ -1,6 +1,34 @@
-var ActionError, NextError, TalosError, UnknownNext, UnknownState;
+var FailedMove, FailedRun, InvalidState, MissingTransition, TalosError, _create, isError;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
+import { generic } from "@dashkite/joy/generic";
+isError = Type.isKind(Error);
+_create = function (type) {
+  var create;
+  create = generic({
+    name: "error create",
+    default: function (...args) {
+      throw new Error(`TalosError.create: input is malformed ${JSON.stringify(args)}`);
+    }
+  });
+  generic(create, function () {
+    return new type({
+      message: "talos encountered an error"
+    });
+  });
+  generic(create, Type.isString, function (messsage) {
+    return new type({
+      message
+    });
+  });
+  generic(create, isError, Type.isString, function (error, messsage) {
+    return new type({
+      message,
+      error
+    });
+  });
+  return create;
+};
 TalosError = function () {
   class TalosError extends Error {
     constructor({
@@ -8,82 +36,67 @@ TalosError = function () {
     }) {
       super(message);
     }
-    static create(options) {
-      return new TalosError(options);
-    }
   }
   ;
+  TalosError.create = _create(TalosError);
   TalosError.isType = Type.isType(TalosError);
   TalosError.isKind = Type.isKind(TalosError);
   return TalosError;
 }.call(this);
-UnknownState = function () {
-  class UnknownState extends TalosError {
-    constructor() {
-      super({
-        message: "talos cannot find the current state in this graph"
-      });
-    }
-    static create() {
-      return new UnknownState();
+InvalidState = function () {
+  class InvalidState extends TalosError {
+    constructor({
+      message
+    }) {
+      super(message);
     }
   }
   ;
-  UnknownState.isType = Type.isType(UnknownState);
-  return UnknownState;
+  InvalidState.create = _create(InvalidState);
+  InvalidState.isType = Type.isType(InvalidState);
+  return InvalidState;
 }.call(this);
-UnknownNext = function () {
-  class UnknownNext extends TalosError {
+MissingTransition = function () {
+  class MissingTransition extends TalosError {
     constructor({
-      vertex
+      message
     }) {
-      super({
-        message: "talos cannot determine the next state from this vertex"
-      });
-      this.vertex = vertex;
-    }
-    static create(options) {
-      return new UnknownNext(options);
+      super(message);
     }
   }
   ;
-  UnknownNext.isType = Type.isType(UnknownNext);
-  return UnknownNext;
+  MissingTransition.create = _create(MissingTransition);
+  MissingTransition.isType = Type.isType(MissingTransition);
+  return MissingTransition;
 }.call(this);
-ActionError = function () {
-  class ActionError extends TalosError {
+FailedRun = function () {
+  class FailedRun extends TalosError {
     constructor({
-      error
+      error,
+      message
     }) {
-      super({
-        message: "talos encountered an error while running this action"
-      });
+      super(message);
       this.error = error;
     }
-    static create(options) {
-      return new ActionError(options);
-    }
   }
   ;
-  ActionError.isType = Type.isType(ActionError);
-  return ActionError;
+  FailedRun.create = _create(FailedRun);
+  FailedRun.isType = Type.isType(FailedRun);
+  return FailedRun;
 }.call(this);
-NextError = function () {
-  class NextError extends TalosError {
+FailedMove = function () {
+  class FailedMove extends TalosError {
     constructor({
-      error
+      error,
+      message
     }) {
-      super({
-        message: "talos encountered an error while resolving next state"
-      });
+      super(message);
       this.error = error;
     }
-    static create(options) {
-      return new NextError(options);
-    }
   }
   ;
-  NextError.isType = Type.isType(NextError);
-  return NextError;
+  FailedMove.create = _create(FailedMove);
+  FailedMove.isType = Type.isType(FailedMove);
+  return FailedMove;
 }.call(this);
-export { TalosError, UnknownState, UnknownNext, ActionError, NextError };
+export { TalosError, InvalidState, MissingTransition, FailedRun, FailedMove };

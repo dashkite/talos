@@ -2,44 +2,43 @@ import * as Meta from "@dashkite/joy/metaclass"
 import * as Type from "@dashkite/joy/type"
 import * as Value from "@dashkite/joy/value"
 import * as $ from "../internal/states"
+import { generic } from "@dashkite/joy/generic"
 import { oneOf } from "../helpers"
 import { TalosError } from "./errors"
 
 
 isState = oneOf [
-  Type.isUndefined
   Type.isString
   Type.isSymbol
 ]
 
-isContext = oneOf [ 
+isError = oneOf [
   Type.isUndefined
-  Type.isObject
+  TalosError.isType
 ]
 
-isError = oneOne [
-  Type.isUndefined
-  TalosError.isKind
-]
+create = generic 
+  name: "talos create"
+  default: ( args... ) -> 
+    throw new Error "Talos.create: input is malformed #{JSON.stringify args}"
 
-verify = ( options ) ->
-  { state, context, error } = options
+generic create, isState, Type.isObject, isError, ( state, context, error ) ->
+  new Talos { state, context, error }
 
-  unless isState state
-    throw new Error "Talos.create: invalid state, #{ state }"
+generic create, ->
+  create $.start, {}, null
 
-  unless isContext context
-    throw new Error "Talos.create: invalid context, #{ context }"
+generic create, isState, Type.isObject, ( state, context ) ->
+  create state, context, null
 
-  unless isError error
-    throw new Error "Talos.create: invalid error, #{ error }"
+generic create, isState, ( state ) ->
+  create state, {}, null
 
+generic create, Type.isObject, ( context ) ->
+  create $.start, context, null
 
 class Talos
   constructor: ({ @state, @context, @error }) ->
-    @state ?= $.start
-    @context ?= {}
-    @error ?= null
 
   Meta.mixin @::, [
     Meta.getters
@@ -47,29 +46,27 @@ class Talos
       halted: -> $.atHalt @state
       success: -> @halted && !@error?
       failure: -> @halted && @error?
-      paused: -> $.atPause @state
-      running: -> !@paused && !@halted
+      running: -> !@halted
   ]
 
-  @create: ( options = {} ) ->
-    verify options
-    new Talos options
-
+  @create: create
   @isType: Type.isType @
 
   halt: ->
     @state = $.halt
 
-  restart: ( state ) ->
-    @state = state ? @.start
+  throw: ( error ) ->
+    @halt()
+    @error = error ? TalosError.create()
+
+  reset: ( state ) ->
+    @state = state ? $.start
+    @context = {}
+    @error = null
 
   clone: ->
-    Talos.create {
-      @state
-      context: Value.clone @context
-      @error
-    }
-
+    create ( Value.clone @state ), ( Value.clone @context ), @error
+      
 
 export {
   Talos

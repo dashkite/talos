@@ -1,78 +1,64 @@
-var Vertex, isAction, isNext, isSelector, verify;
+var Vertex, create, isState;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
+import * as Value from "@dashkite/joy/value";
+import { generic } from "@dashkite/joy/generic";
 import { oneOf } from "../helpers.js";
-isSelector = oneOf([Type.isString, Type.isSymbol, Type.isRegExp, Type.isFunction]);
-isNext = oneOf([Type.isString, Type.isSymbol, Type.isFunction]);
-isAction = oneOf([Type.isUndefined, Type.isFunction]);
-verify = function (options) {
-  var action, next, selector;
-  ({
-    selector,
-    next,
-    action
-  } = options);
-  if (!isSelector(selector)) {
-    throw new Error(`Vertext.create: invalid selector, ${selector}`);
+import { Edge } from "./edge/index.js";
+isState = oneOf([Type.isString, Type.isSymbol]);
+create = generic({
+  name: "vertex create",
+  default: function (...args) {
+    throw new Error(`Vertex.create: input is malformed ${JSON.stringify(args)}`);
   }
-  if (!isNext(next)) {
-    throw new Error(`Vertex.create: invalid next, ${next}`);
-  }
-  if (!isAction(action)) {
-    throw new Error(`Vertex.create: invalid action, ${action}`);
-  }
-};
+});
+generic(create, isState, Type.isArray, function (state, edges) {
+  var edge;
+  return new Vertex({
+    state: state,
+    edges: function () {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = edges.length; i < len; i++) {
+        edge = edges[i];
+        results.push(Edge.create(edge));
+      }
+      return results;
+    }()
+  });
+});
+generic(create, isState, Type.isObject, function (state, _vertex) {
+  return create(state, _vertex.edges);
+});
+generic(create, isState, Type.isUndefined(function (state, _null) {
+  return create(state, []);
+}));
+generic(create, isState, function (state) {
+  return create(state, []);
+});
 Vertex = function () {
   class Vertex {
     constructor({
-      selector: selector1,
-      next: next1,
-      action: action1
+      state: state1,
+      edges: edges1
     }) {
-      this.selector = selector1;
-      this.next = next1;
-      this.action = action1;
-      this;
+      this.state = state1;
+      this.edges = edges1;
     }
-    static create(options) {
-      verify(options);
-      return new Vertex(options);
+    clone() {
+      var edges, state;
+      state = Value.clone(this.state);
+      edges = [...this.edges];
+      return new Vertex({
+        state,
+        edges
+      });
     }
   }
   ;
-  Meta.mixin(Vertex.prototype, [Meta.getters({
-    test: function () {
-      return this._test != null ? this._test : this._test = function () {
-        if (Type.isString(this.selector)) {
-          return talos => {
-            return this.selector === talos.state;
-          };
-        } else if (Type.isSymbol(this.selector)) {
-          return talos => {
-            return this.selector === talos.state;
-          };
-        } else if (Type.isRegExp(this.selector)) {
-          return talos => {
-            return Type.isString(talos.state) && this.selector.test(talos.state);
-          };
-        } else if (Type.isRegularFunction(this.selector)) {
-          return talos => {
-            return this.selector(talos, this);
-          };
-        } else if (Type.isAsyncFunction(this.selector)) {
-          return async talos => {
-            return await this.selector(talos, this);
-          };
-        } else {
-          throw new Error("Vertex#test unknown selector test, unable to match state");
-        }
-      }.call(this);
-    },
-    hasAsyncSelector: function () {
-      return Type.isAsyncFunction(this.test);
-    }
-  })]);
+  Meta.mixin(Vertex.prototype, [Meta.getters({})]);
+  Vertex.create = create;
   Vertex.isType = Type.isType(Vertex);
   return Vertex;
 }.call(this);
-export { Vertex };
+export { isState, Vertex };

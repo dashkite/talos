@@ -1,5 +1,5 @@
+export * from "./edge"
 export * from "./errors"
 export * from "./graph"
-export * from "./pilot"
 export * from "./talos"
 export * from "./vertex"

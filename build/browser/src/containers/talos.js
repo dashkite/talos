@@ -2,7 +2,7 @@ var Talos, create, isError, isState;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
 import * as Value from "@dashkite/joy/value";
-import * as $ from "../internal/states.js";
+import { $start, $halt, atStart, atHalt } from "../internal/states.js";
 import { generic } from "@dashkite/joy/generic";
 import { oneOf } from "../helpers.js";
 import { TalosError } from "./errors.js";
@@ -22,7 +22,7 @@ generic(create, isState, Type.isObject, isError, function (state, context, error
   });
 });
 generic(create, function () {
-  return create($.start, {}, null);
+  return create($start, {}, null);
 });
 generic(create, isState, Type.isObject, function (state, context) {
   return create(state, context, null);
@@ -31,7 +31,7 @@ generic(create, isState, function (state) {
   return create(state, {}, null);
 });
 generic(create, Type.isObject, function (context) {
-  return create($.start, context, null);
+  return create($start, context, null);
 });
 Talos = function () {
   class Talos {
@@ -45,28 +45,34 @@ Talos = function () {
       this.error = error1;
     }
     halt() {
-      return this.state = $.halt;
+      return this.state = $halt;
     }
     throw(error) {
       this.halt();
       return this.error = error != null ? error : TalosError.create();
     }
     reset(state) {
-      this.state = state != null ? state : $.start;
+      this.state = state != null ? state : $start;
       this.context = {};
       return this.error = null;
     }
     clone() {
-      return create(Value.clone(this.state), Value.clone(this.context), this.error);
+      var context;
+      context = Value.clone(this.context);
+      return new Talos({
+        state: this.state,
+        context,
+        error: this.error
+      });
     }
   }
   ;
   Meta.mixin(Talos.prototype, [Meta.getters({
     starting: function () {
-      return $.atStart(this.state);
+      return atStart(this.state);
     },
     halted: function () {
-      return $.atHalt(this.state);
+      return atHalt(this.state);
     },
     success: function () {
       return this.halted && this.error == null;

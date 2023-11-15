@@ -11,7 +11,7 @@ generic create, Type.isUndefined, ->
   null
 
 generic create, Type.isFunction, ( f ) ->
-  f
+  ( talos, transform ) -> f talos, transform
 
 
 export { create as run }

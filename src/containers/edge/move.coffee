@@ -8,13 +8,13 @@ create = generic
     throw new Error "create edge move input is malformed #{JSON.stringify args}"
 
 generic create, Type.isString, ( s ) ->
-  ( talos ) -> talos.state = s
+  ( talos, transform ) -> talos.state = s
 
 generic create, Type.isSymbol, ( s ) ->
-  ( talos ) -> talos.state = s
+  ( talos, transform ) -> talos.state = s
 
 generic create, Type.isFunction, ( f ) ->
-  ( talos ) -> f talos
+  ( talos, transform ) -> f talos, transform
 
 
 export { create as move }

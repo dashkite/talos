@@ -8,18 +8,18 @@ create = generic({
   }
 });
 generic(create, Type.isString, function (s) {
-  return function (talos) {
+  return function (talos, transform) {
     return talos.state = s;
   };
 });
 generic(create, Type.isSymbol, function (s) {
-  return function (talos) {
+  return function (talos, transform) {
     return talos.state = s;
   };
 });
 generic(create, Type.isFunction, function (f) {
-  return function (talos) {
-    return f(talos);
+  return function (talos, transform) {
+    return f(talos, transform);
   };
 });
 export { create as move };

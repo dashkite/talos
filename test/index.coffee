@@ -10,7 +10,6 @@ do ->
 
   $ = { 
     lib
-    lib.states...
   }
 
   print await h.test "Talos", [

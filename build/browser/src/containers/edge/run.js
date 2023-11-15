@@ -11,6 +11,8 @@ generic(create, Type.isUndefined, function () {
   return null;
 });
 generic(create, Type.isFunction, function (f) {
-  return f;
+  return function (talos, transform) {
+    return f(talos, transform);
+  };
 });
 export { create as run };

@@ -1,18 +1,10 @@
-var atCancel, atHalt, atPause, atStart, cancel, halt, pause, start;
-start = Symbol("start");
-halt = Symbol("halt");
-pause = Symbol("pause");
-cancel = Symbol("cancel");
+var $halt, $start, atHalt, atStart;
+$start = Symbol("start");
+$halt = Symbol("halt");
 atStart = function (x) {
-  return x === start;
+  return x === $start;
 };
 atHalt = function (x) {
-  return x === halt;
+  return x === $halt;
 };
-atPause = function (x) {
-  return x === pause;
-};
-atCancel = function (x) {
-  return x === cancel;
-};
-export { start, halt, pause, cancel, atStart, atHalt, atPause, atCancel };
+export { $start, $halt, atStart, atHalt };

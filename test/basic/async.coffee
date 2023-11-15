@@ -2,13 +2,14 @@ import * as Time from "@dashkite/joy/time"
 import * as h from "../helpers"
 
 test = ( $ ) ->
+  { $start, $halt } = $.lib
   graph = null
   talos = null
 
   [
     await h.test "define graph", h.target "basic-async", ->
       graph = $.lib.Graph.create
-        [ $.start ]:
+        [ $start ]:
           edges: [
             accept: true
             run: null
@@ -28,18 +29,18 @@ test = ( $ ) ->
               run: ( talos ) ->
                 await Time.sleep 1
                 talos.context.message = "this overwrite shouldn't happen"
-              move: $.halt
+              move: $halt
             ,
               accept: true
               run: -> await Time.sleep 1
-              move: $.halt
+              move: $halt
           ]
     
     await h.test "define talos", h.target "basic-async", ->
       talos = $.lib.Talos.create()
 
     await h.test "run talos", h.target "basic-async", ->
-      h.assert.equal $.start, talos.state
+      h.assert.equal $start, talos.state
       
       await $.lib.stepAsync graph, talos, null
       h.assert.equal "A", talos.state

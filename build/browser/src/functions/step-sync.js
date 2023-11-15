@@ -8,7 +8,7 @@ matchVertex = function (graph, talos) {
   var vertex;
   vertex = graph.get(talos);
   if (vertex == null) {
-    talos.throw(Errors.InvalidState.create(`talos state ${talos.state} is not in graph`));
+    talos.throw(Errors.InvalidState.create("talos state is not in graph"));
   }
   return vertex;
 };
@@ -17,27 +17,27 @@ matchEdge = function (vertex, talos, transform) {
   ref = vertex.edges;
   for (i = 0, len = ref.length; i < len; i++) {
     edge = ref[i];
-    if (edge.accept(transform, talos) === true) {
+    if (edge.accept(talos, transform) === true) {
       return edge;
     }
   }
-  return talos.throw(Errors.MissingTransition.create(`no edge matches transform ${transform}`));
+  return talos.throw(Errors.MissingTransition.create("no edge matches transform"));
 };
-run = function (talos, edge) {
+run = function (edge, talos, transform) {
   var error;
   if (edge.run != null) {
     try {
-      return edge.run(talos);
+      return edge.run(talos, transform);
     } catch (error1) {
       error = error1;
       return talos.throw(Errors.FailedRun.create(error, "encountered an error while running edge function"));
     }
   }
 };
-move = function (talos, edge) {
+move = function (edge, talos, transform) {
   var error;
   try {
-    return edge.move(talos);
+    return edge.move(talos, transform);
   } catch (error1) {
     error = error1;
     return talos.throw(Errors.FailedMove.create(error, "encountered an error while moving states"));
@@ -65,11 +65,11 @@ _step = function (graph, talos, transform) {
   if (talos.halted) {
     return talos;
   }
-  run(talos, edge);
+  run(edge, talos, transform);
   if (talos.halted) {
     return talos;
   }
-  move(talos, edge);
+  move(edge, talos, transform);
   return talos;
 };
 debug = generic({
@@ -93,7 +93,7 @@ _debug = function (graph, talos, transform) {
   });
   vertex = matchVertex(graph, talos);
   if (talos.halted) {
-    console.error("encountered error matching vertex", talos.error, talos);
+    console.error("encountered error matching vertex", talos.error.error, talos);
     return talos;
   } else {
     console.log("vertex matched", {
@@ -103,7 +103,7 @@ _debug = function (graph, talos, transform) {
   }
   edge = matchEdge(vertex, talos, transform);
   if (talos.halted) {
-    console.error("encountered error matching edge", talos.error, talos);
+    console.error("encountered error matching edge", talos.error.error, talos);
     return talos;
   } else {
     console.log("edge matched", {
@@ -111,18 +111,18 @@ _debug = function (graph, talos, transform) {
       talos
     });
   }
-  run(talos, edge);
+  run(edge, talos, transform);
   if (talos.halted) {
-    console.error("encountered error running edge function", talos.error, talos);
+    console.error("encountered error running edge function", talos.error.error, talos);
     return talos;
   } else {
     console.log("edge function complete", {
       talos
     });
   }
-  move(talos, edge);
+  move(edge, talos, transform);
   if (talos.halted) {
-    console.error("encountered error running move function", talos.error, talos);
+    console.error("encountered error running move function", talos.error.error, talos);
     return talos;
   } else {
     console.log("talos move complete", {

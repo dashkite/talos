@@ -8,7 +8,7 @@ matchVertex = function (graph, talos) {
   var vertex;
   vertex = graph.get(talos);
   if (vertex == null) {
-    talos.throw(Errors.InvalidState.create(`talos state ${talos.state} is not in graph`));
+    talos.throw(Errors.InvalidState.create("talos state is not in graph"));
   }
   return vertex;
 };
@@ -17,27 +17,27 @@ matchEdge = async function (vertex, talos, transform) {
   ref = vertex.edges;
   for (i = 0, len = ref.length; i < len; i++) {
     edge = ref[i];
-    if ((await edge.accept(transform, talos)) === true) {
+    if ((await edge.accept(talos, transform)) === true) {
       return edge;
     }
   }
-  return talos.throw(Errors.MissingTransition.create(`no edge matches transform ${transform}`));
+  return talos.throw(Errors.MissingTransition.create("no edge matches transform"));
 };
-run = async function (talos, edge) {
+run = async function (edge, talos, transform) {
   var error;
   if (edge.run != null) {
     try {
-      return await edge.run(talos);
+      return await edge.run(talos, transform);
     } catch (error1) {
       error = error1;
       return talos.throw(Errors.FailedRun.create(error, "encountered an error while running edge function"));
     }
   }
 };
-move = async function (talos, edge) {
+move = async function (edge, talos, transform) {
   var error;
   try {
-    return await edge.move(talos);
+    return await edge.move(talos, transform);
   } catch (error1) {
     error = error1;
     return talos.throw(Errors.FailedMove.create(error, "encountered an error while moving states"));
@@ -65,11 +65,11 @@ _step = async function (graph, talos, transform) {
   if (talos.halted) {
     return talos;
   }
-  await run(talos, edge);
+  await run(edge, talos, transform);
   if (talos.halted) {
     return talos;
   }
-  await move(talos, edge);
+  await move(edge, talos, transform);
   return talos;
 };
 debug = generic({
@@ -93,7 +93,7 @@ _debug = async function (graph, talos, transform) {
   });
   vertex = matchVertex(graph, talos);
   if (talos.halted) {
-    console.error("encountered error matching vertex", talos.error, talos);
+    console.error("encountered error matching vertex", talos.error.error, talos);
     return talos;
   } else {
     console.log("vertex matched", {
@@ -103,7 +103,7 @@ _debug = async function (graph, talos, transform) {
   }
   edge = await matchEdge(vertex, talos, transform);
   if (talos.halted) {
-    console.error("encountered error matching edge", talos.error, talos);
+    console.error("encountered error matching edge", talos.error.error, talos);
     return talos;
   } else {
     console.log("edge matched", {
@@ -111,18 +111,18 @@ _debug = async function (graph, talos, transform) {
       talos
     });
   }
-  await run(talos, edge);
+  await run(edge, talos, transform);
   if (talos.halted) {
-    console.error("encountered error running edge function", talos.error, talos);
+    console.error("encountered error running edge function", talos.error.error, talos);
     return talos;
   } else {
     console.log("edge function complete", {
       talos
     });
   }
-  await move(talos, edge);
+  await move(edge, talos, transform);
   if (talos.halted) {
-    console.error("encountered error running move function", talos.error, talos);
+    console.error("encountered error running move function", talos.error.error, talos);
     return talos;
   } else {
     console.log("talos move complete", {

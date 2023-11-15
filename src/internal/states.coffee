@@ -1,21 +1,14 @@
-start = Symbol "start"
-halt = Symbol "halt"
-pause = Symbol "pause"
-cancel = Symbol "cancel"
+$start = Symbol "start"
+$halt = Symbol "halt"
 
-atStart = ( x ) -> x == start
-atHalt = ( x ) -> x == halt
-atPause = ( x ) -> x == pause
-atCancel = ( x ) -> x == cancel
+atStart = ( x ) -> x == $start
+atHalt = ( x ) -> x == $halt
+
 
 export {
-  start
-  halt
-  pause
-  cancel
+  $start
+  $halt
 
   atStart
   atHalt
-  atPause
-  atCancel
 }

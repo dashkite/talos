@@ -1,4 +1,4 @@
-var _step, matchEdge, matchVertex, move, run, step;
+var _debug, _step, debug, matchEdge, matchVertex, move, run, step;
 import * as Type from "@dashkite/joy/type";
 import { negate } from "@dashkite/joy/predicate";
 import { generic } from "@dashkite/joy/generic";
@@ -72,4 +72,63 @@ _step = async function (graph, talos, transform) {
   await move(talos, edge);
   return talos;
 };
-export { step as stepAsync };
+debug = generic({
+  name: "debug step talos",
+  default: function (...args) {
+    throw new Error(`debug step: input is malformed ${JSON.stringify(args)}`);
+  }
+});
+generic(debug, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, transform) {
+  return _debug(graph, talos, transform);
+});
+generic(debug, Graph.isType, negate(Talos.isType), function (graph, transform) {
+  return _debug(graph, Talos.create(), transform);
+});
+_debug = async function (graph, talos, transform) {
+  var edge, vertex;
+  console.log("starting step", {
+    graph,
+    talos,
+    transform
+  });
+  vertex = matchVertex(graph, talos);
+  if (talos.halted) {
+    console.error("encountered error matching vertex", talos.error, talos);
+    return talos;
+  } else {
+    console.log("vertex matched", {
+      vertex,
+      talos
+    });
+  }
+  edge = await matchEdge(vertex, talos, transform);
+  if (talos.halted) {
+    console.error("encountered error matching edge", talos.error, talos);
+    return talos;
+  } else {
+    console.log("edge matched", {
+      edge,
+      talos
+    });
+  }
+  await run(talos, edge);
+  if (talos.halted) {
+    console.error("encountered error running edge function", talos.error, talos);
+    return talos;
+  } else {
+    console.log("edge function complete", {
+      talos
+    });
+  }
+  await move(talos, edge);
+  if (talos.halted) {
+    console.error("encountered error running move function", talos.error, talos);
+    return talos;
+  } else {
+    console.log("talos move complete", {
+      talos
+    });
+  }
+  return talos;
+};
+export { step as stepAsync, debug as debugAsync };

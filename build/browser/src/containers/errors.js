@@ -16,12 +16,12 @@ _create = function (type) {
       message: "talos encountered an error"
     });
   });
-  generic(create, Type.isString, function (messsage) {
+  generic(create, Type.isString, function (message) {
     return new type({
       message
     });
   });
-  generic(create, isError, Type.isString, function (error, messsage) {
+  generic(create, isError, Type.isString, function (error, message) {
     return new type({
       message,
       error

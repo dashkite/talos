@@ -61,6 +61,55 @@ _step = ( graph, talos, transform ) ->
   talos
 
 
+
+debug = generic 
+  name: "debug step talos"
+  default: ( args... ) -> 
+    throw new Error "debug step: input is malformed #{JSON.stringify args}"
+
+generic debug, Graph.isType, Talos.isType, Type.isAny, ( graph, talos, transform ) ->
+  _debug graph, talos, transform
+
+generic debug, Graph.isType, ( negate Talos.isType ), ( graph, transform ) ->
+  _debug graph, Talos.create(), transform
+
+
+_debug = ( graph, talos, transform ) ->
+  console.log "starting step", { graph, talos, transform }
+
+  vertex = matchVertex graph, talos
+  if talos.halted
+    console.error "encountered error matching vertex", talos.error, talos
+    return talos
+  else
+    console.log "vertex matched", { vertex, talos }
+  
+  edge = await matchEdge vertex, talos, transform
+  if talos.halted
+    console.error "encountered error matching edge", talos.error, talos
+    return talos
+  else
+    console.log "edge matched", { edge, talos }
+
+  await run talos, edge
+  if talos.halted
+    console.error "encountered error running edge function", talos.error, talos
+    return talos
+  else
+    console.log "edge function complete", { talos }
+
+  await move talos, edge
+  if talos.halted
+    console.error "encountered error running move function", talos.error, talos
+    return talos
+  else
+    console.log "talos move complete", { talos }
+
+  talos
+
+
+
 export {
   step as stepAsync
+  debug as debugAsync
 }

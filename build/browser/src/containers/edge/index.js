@@ -27,6 +27,13 @@ Edge = function () {
       this.run = run;
       this.move = move;
     }
+    clone() {
+      return new Edge({
+        accept: this.accept,
+        run: this.run,
+        move: this.move
+      });
+    }
   }
   ;
   Meta.mixin(Edge.prototype, [Meta.getters({})]);

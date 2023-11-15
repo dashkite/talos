@@ -13,10 +13,10 @@ _create = ( type ) ->
   generic create, ->
     new type message: "talos encountered an error"
 
-  generic create, Type.isString, ( messsage ) ->
+  generic create, Type.isString, ( message ) ->
     new type { message }
 
-  generic create, isError, Type.isString, ( error, messsage ) ->
+  generic create, isError, Type.isString, ( error, message ) ->
     new type { message, error }
 
   create

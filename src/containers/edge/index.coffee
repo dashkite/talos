@@ -26,6 +26,9 @@ class Edge
   @create: create
   @isType: Type.isType @
 
+  clone: ->
+    new Edge { @accept, @run, @move }
+
 
 export {
   Edge

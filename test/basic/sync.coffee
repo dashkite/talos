@@ -41,7 +41,7 @@ test = ( $ ) ->
       $.lib.stepSync graph, talos, null
       h.assert.equal "A", talos.state
 
-      $.lib.debugSync graph, talos, "alpha"
+      $.lib.stepSync graph, talos, "go"
       h.assert.equal "B", talos.state
       h.assert.equal "made it to A, going to B", talos.context.message
 

@@ -1,14 +1,15 @@
 import * as Time from "@dashkite/joy/time"
+import { Graph, Talos, $start, $halt } from "../../src"
+import { step } from "../../src/stable/async"
 import * as h from "../helpers"
 
 test = ( $ ) ->
-  { $start, $halt } = $.lib
   graph = null
   talos = null
 
   [
-    await h.test "define graph", h.target "basic-async", ->
-      graph = $.lib.Graph.create
+    await h.test "define graph", h.target "stable-async", ->
+      graph = Graph.create
         [ $start ]:
           edges: [
             accept: true
@@ -36,20 +37,24 @@ test = ( $ ) ->
               move: $halt
           ]
     
-    await h.test "define talos", h.target "basic-async", ->
-      talos = $.lib.Talos.create()
+    await h.test "define talos", h.target "stable-async", ->
+      talos = Talos.create()
 
-    await h.test "run talos", h.target "basic-async", ->
+    await h.test "run talos", h.target "stable-async", ->
       h.assert.equal $start, talos.state
       
-      await $.lib.stepAsync graph, talos, null
+      await step graph, talos, null
       h.assert.equal "A", talos.state
 
-      await $.lib.stepAsync graph, talos, "go"
+      # Ignores transitions that don't match
+      await step graph, talos, null
+      h.assert.equal "A", talos.state
+
+      await step graph, talos, "go"
       h.assert.equal "B", talos.state
       h.assert.equal "made it to A, going to B", talos.context.message
 
-      await $.lib.stepAsync graph, talos, "go"
+      await step graph, talos, "go"
       h.assert talos.success
       h.assert.equal "made it to A, going to B", talos.context.message
   ]

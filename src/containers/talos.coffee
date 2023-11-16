@@ -1,7 +1,7 @@
 import * as Meta from "@dashkite/joy/metaclass"
 import * as Type from "@dashkite/joy/type"
 import * as Value from "@dashkite/joy/value"
-import { $start, $halt, atStart, atHalt } from "../internal/states"
+import { $start, $halt, atStart, atHalt, atPause } from "../internal/states"
 import { generic } from "@dashkite/joy/generic"
 import { oneOf } from "../helpers"
 import { TalosError } from "./errors"
@@ -44,9 +44,10 @@ class Talos
     Meta.getters
       starting: -> atStart @state
       halted: -> atHalt @state
+      paused: -> atPause @state
       success: -> @halted && !@error?
       failure: -> @halted && @error?
-      running: -> !@halted
+      running: -> !@halted && !@paused
   ]
 
   @create: create

@@ -12,32 +12,32 @@ matchVertex = function (graph, talos) {
   }
   return vertex;
 };
-matchEdge = function (vertex, talos, transform) {
+matchEdge = async function (vertex, talos, transform) {
   var edge, i, len, ref;
   ref = vertex.edges;
   for (i = 0, len = ref.length; i < len; i++) {
     edge = ref[i];
-    if (edge.accept(talos, transform) === true) {
+    if ((await edge.accept(talos, transform)) === true) {
       return edge;
     }
   }
   return talos.throw(Errors.MissingTransition.create("no edge matches transform"));
 };
-run = function (edge, talos, transform) {
+run = async function (edge, talos, transform) {
   var error;
   if (edge.run != null) {
     try {
-      return edge.run(talos, transform);
+      return await edge.run(talos, transform);
     } catch (error1) {
       error = error1;
       return talos.throw(Errors.FailedRun.create(error, "encountered an error while running edge function"));
     }
   }
 };
-move = function (edge, talos, transform) {
+move = async function (edge, talos, transform) {
   var error;
   try {
-    return edge.move(talos, transform);
+    return await edge.move(talos, transform);
   } catch (error1) {
     error = error1;
     return talos.throw(Errors.FailedMove.create(error, "encountered an error while moving states"));
@@ -55,21 +55,21 @@ generic(step, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, tr
 generic(step, Graph.isType, negate(Talos.isType), function (graph, transform) {
   return step(graph, Talos.create(), transform);
 });
-_step = function (graph, talos, transform) {
+_step = async function (graph, talos, transform) {
   var edge, vertex;
   vertex = matchVertex(graph, talos);
   if (talos.halted) {
     return talos;
   }
-  edge = matchEdge(vertex, talos, transform);
+  edge = await matchEdge(vertex, talos, transform);
   if (talos.halted) {
     return talos;
   }
-  run(edge, talos, transform);
+  await run(edge, talos, transform);
   if (talos.halted) {
     return talos;
   }
-  move(edge, talos, transform);
+  await move(edge, talos, transform);
   return talos;
 };
 debug = generic({
@@ -84,7 +84,7 @@ generic(debug, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, t
 generic(debug, Graph.isType, negate(Talos.isType), function (graph, transform) {
   return _debug(graph, Talos.create(), transform);
 });
-_debug = function (graph, talos, transform) {
+_debug = async function (graph, talos, transform) {
   var edge, vertex;
   console.log("starting step", {
     graph,
@@ -101,7 +101,7 @@ _debug = function (graph, talos, transform) {
       talos
     });
   }
-  edge = matchEdge(vertex, talos, transform);
+  edge = await matchEdge(vertex, talos, transform);
   if (talos.halted) {
     console.error("encountered error matching edge", talos.error.error, talos);
     return talos;
@@ -111,7 +111,7 @@ _debug = function (graph, talos, transform) {
       talos
     });
   }
-  run(edge, talos, transform);
+  await run(edge, talos, transform);
   if (talos.halted) {
     console.error("encountered error running edge function", talos.error.error, talos);
     return talos;
@@ -120,7 +120,7 @@ _debug = function (graph, talos, transform) {
       talos
     });
   }
-  move(edge, talos, transform);
+  await move(edge, talos, transform);
   if (talos.halted) {
     console.error("encountered error running move function", talos.error.error, talos);
     return talos;
@@ -131,4 +131,4 @@ _debug = function (graph, talos, transform) {
   }
   return talos;
 };
-export { step as stepSync, debug as debugSync };
+export { step, debug };

@@ -21,7 +21,6 @@ matchEdge = async function (vertex, talos, transform) {
       return edge;
     }
   }
-  return talos.throw(Errors.MissingTransition.create("no edge matches transform"));
 };
 run = async function (edge, talos, transform) {
   var error;
@@ -62,6 +61,9 @@ _step = async function (graph, talos, transform) {
     return talos;
   }
   edge = await matchEdge(vertex, talos, transform);
+  if (edge == null) {
+    return talos;
+  }
   if (talos.halted) {
     return talos;
   }
@@ -102,6 +104,10 @@ _debug = async function (graph, talos, transform) {
     });
   }
   edge = await matchEdge(vertex, talos, transform);
+  if (edge == null) {
+    console.log("no edge match, ignoring transform");
+    return talos;
+  }
   if (talos.halted) {
     console.error("encountered error matching edge", talos.error.error, talos);
     return talos;
@@ -131,4 +137,4 @@ _debug = async function (graph, talos, transform) {
   }
   return talos;
 };
-export { step as stepAsync, debug as debugAsync };
+export { step, debug };

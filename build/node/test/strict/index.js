@@ -26,4 +26,4 @@ Object.keys(_async).forEach(function (key) {
   });
 });
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsInNvdXJjZXNDb250ZW50IjpbXSwic291cmNlUm9vdCI6IiJ9
-//# sourceURL=test/basic/index.coffee
+//# sourceURL=test/strict/index.coffee

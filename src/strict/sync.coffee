@@ -8,27 +8,27 @@ import * as Errors from "../containers/errors"
 matchVertex = ( graph, talos ) ->
   vertex = graph.get talos
   if !vertex?
-    talos.throw Errors.InvalidState.create "talos state is not
-      in graph"
+    talos.throw Errors.InvalidState.create "talos state is
+      not in graph"
   vertex
 
 matchEdge = ( vertex, talos, transform ) ->
   for edge in vertex.edges
-    if ( await edge.accept talos, transform ) == true
+    if ( edge.accept talos, transform ) == true
       return edge
   talos.throw Errors.MissingTransition.create "no edge matches transform"
 
 run = ( edge, talos, transform ) ->
   if edge.run?
     try
-      await edge.run talos, transform
+      edge.run talos, transform
     catch error
       talos.throw Errors.FailedRun.create error, 
         "encountered an error while running edge function"
 
 move = ( edge, talos, transform ) ->
   try
-    await edge.move talos, transform
+    edge.move talos, transform
   catch error
     talos.throw Errors.FailedMove.create error, 
       "encountered an error while moving states"
@@ -50,15 +50,14 @@ _step = ( graph, talos, transform ) ->
   vertex = matchVertex graph, talos
   return talos if talos.halted
 
-  edge = await matchEdge vertex, talos, transform
+  edge = matchEdge vertex, talos, transform
   return talos if talos.halted
 
-  await run edge, talos, transform
+  run edge, talos, transform
   return talos if talos.halted
 
-  await move edge, talos, transform
+  move edge, talos, transform
   talos
-
 
 
 debug = generic 
@@ -83,21 +82,21 @@ _debug = ( graph, talos, transform ) ->
   else
     console.log "vertex matched", { vertex, talos }
   
-  edge = await matchEdge vertex, talos, transform
+  edge = matchEdge vertex, talos, transform
   if talos.halted
     console.error "encountered error matching edge", talos.error.error, talos
     return talos
   else
     console.log "edge matched", { edge, talos }
 
-  await run edge, talos, transform
+  run edge, talos, transform
   if talos.halted
     console.error "encountered error running edge function", talos.error.error, talos
     return talos
   else
     console.log "edge function complete", { talos }
 
-  await move edge, talos, transform
+  move edge, talos, transform
   if talos.halted
     console.error "encountered error running move function", talos.error.error, talos
     return talos
@@ -107,8 +106,7 @@ _debug = ( graph, talos, transform ) ->
   talos
 
 
-
 export {
-  step as stepAsync
-  debug as debugAsync
+  step
+  debug
 }

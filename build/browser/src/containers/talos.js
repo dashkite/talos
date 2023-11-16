@@ -2,7 +2,7 @@ var Talos, create, isError, isState;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
 import * as Value from "@dashkite/joy/value";
-import { $start, $halt, atStart, atHalt } from "../internal/states.js";
+import { $start, $halt, atStart, atHalt, atPause } from "../internal/states.js";
 import { generic } from "@dashkite/joy/generic";
 import { oneOf } from "../helpers.js";
 import { TalosError } from "./errors.js";
@@ -74,6 +74,9 @@ Talos = function () {
     halted: function () {
       return atHalt(this.state);
     },
+    paused: function () {
+      return atPause(this.state);
+    },
     success: function () {
       return this.halted && this.error == null;
     },
@@ -81,7 +84,7 @@ Talos = function () {
       return this.halted && this.error != null;
     },
     running: function () {
-      return !this.halted;
+      return !this.halted && !this.paused;
     }
   })]);
   Talos.create = create;

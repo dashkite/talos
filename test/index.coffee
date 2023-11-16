@@ -1,21 +1,24 @@
 import "source-map-support/register"
 import { success } from "@dashkite/amen"
 import print from "@dashkite/amen-console"
-import * as lib from "../src"
 import * as h from "./helpers"
 
-import * as basic from "./basic"
+import * as Strict from "./strict"
+import * as Stable from "./stable"
 
 do ->
 
-  $ = { 
-    lib
-  }
+  $ = {}
 
   print await h.test "Talos", [
-    await h.test "Basic", [
-      await h.test "Sync", await basic.sync $
-      await h.test "Async", await basic.async $
+    await h.test "Strict", [
+      await h.test "Sync", await Strict.sync $
+      await h.test "Async", await Strict.async $
+    ]
+
+    await h.test "Stable", [
+      await h.test "Sync", await Stable.sync $
+      await h.test "Async", await Stable.async $
     ]
   ]
 

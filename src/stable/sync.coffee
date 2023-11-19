@@ -8,29 +8,29 @@ import * as Errors from "../containers/errors"
 matchVertex = ( graph, talos ) ->
   vertex = graph.get talos
   if !vertex?
-    talos.throw Errors.InvalidState.create "talos state is
+    talos.throw Errors.InvalidState.make "talos state is
       not in graph"
   vertex
 
-matchEdge = ( vertex, talos, transform ) ->
+matchEdge = ( vertex, talos, transforms ) ->
   for edge in vertex.edges
-    if ( edge.accept talos, transform ) == true
+    if ( edge.accept talos, transforms... ) == true
       return edge
   return
 
-run = ( edge, talos, transform ) ->
+run = ( edge, talos, transforms ) ->
   if edge.run?
     try
-      edge.run talos, transform
+      edge.run talos, transforms...
     catch error
-      talos.throw Errors.FailedRun.create error, 
+      talos.throw Errors.FailedRun.make error, 
         "encountered an error while running edge function"
 
-move = ( edge, talos, transform ) ->
+move = ( edge, talos, transforms ) ->
   try
-    edge.move talos, transform
+    edge.move talos, transforms...
   catch error
-    talos.throw Errors.FailedMove.create error, 
+    talos.throw Errors.FailedMove.make error, 
       "encountered an error while moving states"
 
 
@@ -39,25 +39,25 @@ step = generic
   default: ( args... ) -> 
     throw new Error "step: input is malformed #{JSON.stringify args}"
 
-generic step, Graph.isType, Talos.isType, Type.isAny, ( graph, talos, transform ) ->
-  _step graph, talos, transform
+generic step, Graph.isType, Talos.isType, Type.isAny, ( graph, talos, transforms... ) ->
+  _step graph, talos, transforms
 
-generic step, Graph.isType, ( negate Talos.isType ), ( graph, transform ) ->
-  step graph, Talos.create(), transform
+generic step, Graph.isType, ( negate Talos.isType ), ( graph, transforms... ) ->
+  step graph, Talos.make(), transforms
 
 
-_step = ( graph, talos, transform ) ->
+_step = ( graph, talos, transforms ) ->
   vertex = matchVertex graph, talos
   return talos if talos.halted
 
-  edge = matchEdge vertex, talos, transform
+  edge = matchEdge vertex, talos, transforms
   return talos if !edge?
   return talos if talos.halted
 
-  run edge, talos, transform
+  run edge, talos, transforms
   return talos if talos.halted
 
-  move edge, talos, transform
+  move edge, talos, transforms
   talos
 
 
@@ -66,15 +66,15 @@ debug = generic
   default: ( args... ) -> 
     throw new Error "debug step: input is malformed #{JSON.stringify args}"
 
-generic debug, Graph.isType, Talos.isType, Type.isAny, ( graph, talos, transform ) ->
-  _debug graph, talos, transform
+generic debug, Graph.isType, Talos.isType, Type.isAny, ( graph, talos, transforms... ) ->
+  _debug graph, talos, transforms
 
-generic debug, Graph.isType, ( negate Talos.isType ), ( graph, transform ) ->
-  _debug graph, Talos.create(), transform
+generic debug, Graph.isType, ( negate Talos.isType ), ( graph, transforms... ) ->
+  _debug graph, Talos.make(), transforms
 
 
-_debug = ( graph, talos, transform ) ->
-  console.log "starting step", { graph, talos, transform }
+_debug = ( graph, talos, transforms ) ->
+  console.log "starting step", { graph, talos, transforms }
 
   vertex = matchVertex graph, talos
   if talos.halted
@@ -83,9 +83,9 @@ _debug = ( graph, talos, transform ) ->
   else
     console.log "vertex matched", { vertex, talos }
   
-  edge = matchEdge vertex, talos, transform
+  edge = matchEdge vertex, talos, transforms
   if !edge?
-    console.log "no edge match, ignoring transform"
+    console.log "no edge match, ignoring transforms"
     return talos
   if talos.halted
     console.error "encountered error matching edge", talos.error.error, talos
@@ -93,14 +93,14 @@ _debug = ( graph, talos, transform ) ->
   else
     console.log "edge matched", { edge, talos }
 
-  run edge, talos, transform
+  run edge, talos, transforms
   if talos.halted
     console.error "encountered error running edge function", talos.error.error, talos
     return talos
   else
     console.log "edge function complete", { talos }
 
-  move edge, talos, transform
+  move edge, talos, transforms
   if talos.halted
     console.error "encountered error running move function", talos.error.error, talos
     return talos
@@ -113,4 +113,9 @@ _debug = ( graph, talos, transform ) ->
 export {
   step
   debug
+
+  matchVertex
+  matchEdge 
+  run
+  move
 }

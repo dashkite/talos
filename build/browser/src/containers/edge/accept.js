@@ -1,40 +1,40 @@
-var create;
+var make;
 import * as Type from "@dashkite/joy/type";
 import { generic } from "@dashkite/joy/generic";
-create = generic({
-  name: "create edge accept",
+make = generic({
+  name: "make edge accept",
   default: function (...args) {
-    throw new Error(`create edge accept input is malformed ${JSON.stringify(args)}`);
+    throw new Error(`make edge accept input is malformed ${JSON.stringify(args)}`);
   }
 });
-generic(create, Type.isString, function (s) {
+generic(make, Type.isString, function (s) {
   return function (talos, transform) {
     return transform === s;
   };
 });
-generic(create, Type.isSymbol, function (s) {
+generic(make, Type.isSymbol, function (s) {
   return function (talos, transform) {
     return transform === s;
   };
 });
-generic(create, Type.isNumber, function (n) {
+generic(make, Type.isNumber, function (n) {
   return function (talos, transform) {
     return transform === n;
   };
 });
-generic(create, Type.isBoolean, function (b) {
+generic(make, Type.isBoolean, function (b) {
   return function () {
     return b;
   };
 });
-generic(create, Type.isRegExp, function (re) {
+generic(make, Type.isRegExp, function (re) {
   return function (talos, transform) {
     return Type.isString(transform) && re.test(transform);
   };
 });
-generic(create, Type.isFunction, function (f) {
-  return function (talos, transform) {
-    return f(talos, transform);
+generic(make, Type.isFunction, function (f) {
+  return function (talos, ...transforms) {
+    return f(talos, ...transforms);
   };
 });
-export { create as accept };
+export { make as accept };

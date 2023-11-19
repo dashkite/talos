@@ -4,15 +4,15 @@ import { generic } from "@dashkite/joy/generic"
 import { Vertex } from "./vertex"
 
 
-create = generic 
-  name: "graph create"
+make = generic 
+  name: "graph make"
   default: ( args... ) -> 
-    throw new Error "Graph.create: input is malformed #{JSON.stringify args}"
+    throw new Error "Graph.make: input is malformed #{JSON.stringify args}"
 
-generic create, Type.isObject, ( graph ) ->
+generic make, Type.isObject, ( graph ) ->
   for state in Reflect.ownKeys graph
     vertex = graph[ state ]
-    graph[ state ] = Vertex.create state, vertex
+    graph[ state ] = Vertex.make state, vertex
 
   new Graph { graph }
 
@@ -24,7 +24,7 @@ class Graph
     Meta.getters {}
   ]
 
-  @create: create
+  @make: make
   @isType: Type.isType @
 
   get: ( talos ) ->

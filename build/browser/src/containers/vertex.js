@@ -1,4 +1,4 @@
-var Vertex, _create, isState;
+var Vertex, _make, isState;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
 import * as Value from "@dashkite/joy/value";
@@ -6,15 +6,15 @@ import { generic } from "@dashkite/joy/generic";
 import { oneOf } from "../helpers.js";
 import { Edge } from "./edge/index.js";
 isState = oneOf([Type.isString, Type.isSymbol]);
-_create = function (type) {
-  var create;
-  create = generic({
-    name: "vertex create",
+_make = function (type) {
+  var make;
+  make = generic({
+    name: "vertex make",
     default: function (...args) {
-      throw new Error(`Vertex.create: input is malformed ${JSON.stringify(args)}`);
+      throw new Error(`Vertex.make: input is malformed ${JSON.stringify(args)}`);
     }
   });
-  generic(create, isState, Type.isArray, function (state, edges) {
+  generic(make, isState, Type.isArray, function (state, edges) {
     var edge;
     return new Vertex({
       state: state,
@@ -23,31 +23,31 @@ _create = function (type) {
         results = [];
         for (i = 0, len = edges.length; i < len; i++) {
           edge = edges[i];
-          results.push(Edge.create(edge));
+          results.push(Edge.make(edge));
         }
         return results;
       }()
     });
   });
-  generic(create, isState, Type.isObject, function (state, _vertex) {
-    return create(state, _vertex.edges);
+  generic(make, isState, Type.isObject, function (state, _vertex) {
+    return make(state, _vertex.edges);
   });
-  generic(create, isState, Type.isUndefined(function (state, _null) {
-    return create(state, []);
+  generic(make, isState, Type.isUndefined(function (state, _null) {
+    return make(state, []);
   }));
-  generic(create, isState, function (state) {
-    return create(state, []);
+  generic(make, isState, function (state) {
+    return make(state, []);
   });
-  generic(create, type.isType, function (vertex) {
+  generic(make, type.isType, function (vertex) {
     return vertex.clone();
   });
-  generic(create, isState, type.isType, function (state, _vertex) {
+  generic(make, isState, type.isType, function (state, _vertex) {
     var vertex;
     vertex = _vertex.clone();
     vertex.state = state;
     return vertex;
   });
-  return create;
+  return make;
 };
 Vertex = function () {
   class Vertex {
@@ -79,7 +79,7 @@ Vertex = function () {
   }
   ;
   Meta.mixin(Vertex.prototype, [Meta.getters({})]);
-  Vertex.create = _create(Vertex);
+  Vertex.make = _make(Vertex);
   Vertex.isType = Type.isType(Vertex);
   return Vertex;
 }.call(this);

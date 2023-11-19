@@ -2,19 +2,19 @@ import * as Type from "@dashkite/joy/type"
 import { generic } from "@dashkite/joy/generic"
 
 
-create = generic 
-  name: "create edge move"
+make = generic 
+  name: "make edge move"
   default: ( args... ) -> 
-    throw new Error "create edge move input is malformed #{JSON.stringify args}"
+    throw new Error "make edge move input is malformed #{JSON.stringify args}"
 
-generic create, Type.isString, ( s ) ->
+generic make, Type.isString, ( s ) ->
   ( talos, transform ) -> talos.state = s
 
-generic create, Type.isSymbol, ( s ) ->
+generic make, Type.isSymbol, ( s ) ->
   ( talos, transform ) -> talos.state = s
 
-generic create, Type.isFunction, ( f ) ->
-  ( talos, transform ) -> f talos, transform
+generic make, Type.isFunction, ( f ) ->
+  ( talos, transforms... ) -> f talos, transforms...
 
 
-export { create as move }
+export { make as move }

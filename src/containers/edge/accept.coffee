@@ -2,30 +2,30 @@ import * as Type from "@dashkite/joy/type"
 import { generic } from "@dashkite/joy/generic"
 
 
-create = generic 
-  name: "create edge accept"
+make = generic 
+  name: "make edge accept"
   default: ( args... ) -> 
-    throw new Error "create edge accept input is malformed #{JSON.stringify args}"
+    throw new Error "make edge accept input is malformed #{JSON.stringify args}"
 
-generic create, Type.isString, ( s ) ->
+generic make, Type.isString, ( s ) ->
   ( talos, transform ) -> transform == s
 
-generic create, Type.isSymbol, ( s ) ->
+generic make, Type.isSymbol, ( s ) ->
   ( talos, transform ) -> transform == s
 
-generic create, Type.isNumber, ( n ) ->
+generic make, Type.isNumber, ( n ) ->
   ( talos, transform ) -> transform == n
 
-generic create, Type.isBoolean, ( b ) ->
+generic make, Type.isBoolean, ( b ) ->
   -> b
 
-generic create, Type.isRegExp, ( re ) ->
+generic make, Type.isRegExp, ( re ) ->
   ( talos, transform ) -> 
     ( Type.isString transform ) && ( re.test transform )
 
-generic create, Type.isFunction, ( f ) ->
-  ( talos, transform ) -> f talos, transform
+generic make, Type.isFunction, ( f ) ->
+  ( talos, transforms... ) -> f talos, transforms...
 
 
 
-export { create as accept }
+export { make as accept }

@@ -1,5 +1,5 @@
 export * from "./containers"
-export * from "./internal/states"
+export * from "./states"
 import * as Stable from "./stable"
 import * as Strict from "./strict"
 

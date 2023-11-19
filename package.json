@@ -12,7 +12,10 @@
     "url": "git+https://github.com/dashkite/talos.git"
   },
   "license": "SEE LICENSE IN LICENSE.md",
-  "author": "David Harper",
+  "contributors": [
+    "Dan Yoder <dan@dashkite.com>",
+    "David Harper <david@dashkite.com>"
+  ],
   "exports": {
     ".": {
       "node": "./build/node/src/index.js",

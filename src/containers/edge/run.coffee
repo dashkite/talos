@@ -2,16 +2,16 @@ import * as Type from "@dashkite/joy/type"
 import { generic } from "@dashkite/joy/generic"
 
 
-create = generic 
-  name: "create edge run"
+make = generic 
+  name: "make edge run"
   default: ( args... ) -> 
-    throw new Error "create edge run input is malformed #{JSON.stringify args}"
+    throw new Error "make edge run input is malformed #{JSON.stringify args}"
 
-generic create, Type.isUndefined, ->
+generic make, Type.isUndefined, ->
   null
 
-generic create, Type.isFunction, ( f ) ->
-  ( talos, transform ) -> f talos, transform
+generic make, Type.isFunction, ( f ) ->
+  ( talos, transforms... ) -> f talos.context, transforms...
 
 
-export { create as run }
+export { make as run }

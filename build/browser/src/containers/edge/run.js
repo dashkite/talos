@@ -1,18 +1,18 @@
-var create;
+var make;
 import * as Type from "@dashkite/joy/type";
 import { generic } from "@dashkite/joy/generic";
-create = generic({
-  name: "create edge run",
+make = generic({
+  name: "make edge run",
   default: function (...args) {
-    throw new Error(`create edge run input is malformed ${JSON.stringify(args)}`);
+    throw new Error(`make edge run input is malformed ${JSON.stringify(args)}`);
   }
 });
-generic(create, Type.isUndefined, function () {
+generic(make, Type.isUndefined, function () {
   return null;
 });
-generic(create, Type.isFunction, function (f) {
-  return function (talos, transform) {
-    return f(talos, transform);
+generic(make, Type.isFunction, function (f) {
+  return function (talos, ...transforms) {
+    return f(talos.context, ...transforms);
   };
 });
-export { create as run };
+export { make as run };

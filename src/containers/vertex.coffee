@@ -11,35 +11,35 @@ isState = oneOf [
   Type.isSymbol
 ]
 
-_create = ( type ) ->
-  create = generic 
-    name: "vertex create"
+_make = ( type ) ->
+  make = generic 
+    name: "vertex make"
     default: ( args... ) -> 
-      throw new Error "Vertex.create: input is malformed #{JSON.stringify args}"
+      throw new Error "Vertex.make: input is malformed #{JSON.stringify args}"
 
-  generic create, isState, Type.isArray, ( state, edges ) ->
+  generic make, isState, Type.isArray, ( state, edges ) ->
     new Vertex
       state: state
-      edges: ( Edge.create edge for edge in edges )
+      edges: ( Edge.make edge for edge in edges )
 
-  generic create, isState, Type.isObject, ( state, _vertex ) ->
-    create state, _vertex.edges
+  generic make, isState, Type.isObject, ( state, _vertex ) ->
+    make state, _vertex.edges
 
-  generic create, isState, Type.isUndefined ( state, _null ) ->
-    create state, []
+  generic make, isState, Type.isUndefined ( state, _null ) ->
+    make state, []
 
-  generic create, isState, ( state ) ->
-    create state, []
+  generic make, isState, ( state ) ->
+    make state, []
 
-  generic create, type.isType, ( vertex ) ->
+  generic make, type.isType, ( vertex ) ->
     vertex.clone()
 
-  generic create, isState, type.isType, ( state, _vertex ) ->
+  generic make, isState, type.isType, ( state, _vertex ) ->
     vertex = _vertex.clone()
     vertex.state = state
     vertex
 
-  create
+  make
 
 
 class Vertex
@@ -49,7 +49,7 @@ class Vertex
     Meta.getters {}
   ]
 
-  @create: _create @
+  @make: _make @
   @isType: Type.isType @
 
   clone: ->

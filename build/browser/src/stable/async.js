@@ -8,38 +8,38 @@ matchVertex = function (graph, talos) {
   var vertex;
   vertex = graph.get(talos);
   if (vertex == null) {
-    talos.throw(Errors.InvalidState.create("talos state is not in graph"));
+    talos.throw(Errors.InvalidState.make("talos state is not in graph"));
   }
   return vertex;
 };
-matchEdge = async function (vertex, talos, transform) {
+matchEdge = async function (vertex, talos, transforms) {
   var edge, i, len, ref;
   ref = vertex.edges;
   for (i = 0, len = ref.length; i < len; i++) {
     edge = ref[i];
-    if ((await edge.accept(talos, transform)) === true) {
+    if ((await edge.accept(talos, ...transforms)) === true) {
       return edge;
     }
   }
 };
-run = async function (edge, talos, transform) {
+run = async function (edge, talos, transforms) {
   var error;
   if (edge.run != null) {
     try {
-      return await edge.run(talos, transform);
+      return await edge.run(talos, ...transforms);
     } catch (error1) {
       error = error1;
-      return talos.throw(Errors.FailedRun.create(error, "encountered an error while running edge function"));
+      return talos.throw(Errors.FailedRun.make(error, "encountered an error while running edge function"));
     }
   }
 };
-move = async function (edge, talos, transform) {
+move = async function (edge, talos, transforms) {
   var error;
   try {
-    return await edge.move(talos, transform);
+    return await edge.move(talos, ...transforms);
   } catch (error1) {
     error = error1;
-    return talos.throw(Errors.FailedMove.create(error, "encountered an error while moving states"));
+    return talos.throw(Errors.FailedMove.make(error, "encountered an error while moving states"));
   }
 };
 step = generic({
@@ -48,30 +48,30 @@ step = generic({
     throw new Error(`step: input is malformed ${JSON.stringify(args)}`);
   }
 });
-generic(step, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, transform) {
-  return _step(graph, talos, transform);
+generic(step, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, ...transforms) {
+  return _step(graph, talos, transforms);
 });
-generic(step, Graph.isType, negate(Talos.isType), function (graph, transform) {
-  return step(graph, Talos.create(), transform);
+generic(step, Graph.isType, negate(Talos.isType), function (graph, ...transforms) {
+  return step(graph, Talos.make(), transforms);
 });
-_step = async function (graph, talos, transform) {
+_step = async function (graph, talos, transforms) {
   var edge, vertex;
   vertex = matchVertex(graph, talos);
   if (talos.halted) {
     return talos;
   }
-  edge = await matchEdge(vertex, talos, transform);
+  edge = await matchEdge(vertex, talos, transforms);
   if (edge == null) {
     return talos;
   }
   if (talos.halted) {
     return talos;
   }
-  await run(edge, talos, transform);
+  await run(edge, talos, transforms);
   if (talos.halted) {
     return talos;
   }
-  await move(edge, talos, transform);
+  await move(edge, talos, transforms);
   return talos;
 };
 debug = generic({
@@ -80,18 +80,18 @@ debug = generic({
     throw new Error(`debug step: input is malformed ${JSON.stringify(args)}`);
   }
 });
-generic(debug, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, transform) {
-  return _debug(graph, talos, transform);
+generic(debug, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, ...transforms) {
+  return _debug(graph, talos, transforms);
 });
-generic(debug, Graph.isType, negate(Talos.isType), function (graph, transform) {
-  return _debug(graph, Talos.create(), transform);
+generic(debug, Graph.isType, negate(Talos.isType), function (graph, ...transforms) {
+  return _debug(graph, Talos.make(), transforms);
 });
-_debug = async function (graph, talos, transform) {
+_debug = async function (graph, talos, transforms) {
   var edge, vertex;
   console.log("starting step", {
     graph,
     talos,
-    transform
+    transforms
   });
   vertex = matchVertex(graph, talos);
   if (talos.halted) {
@@ -103,9 +103,9 @@ _debug = async function (graph, talos, transform) {
       talos
     });
   }
-  edge = await matchEdge(vertex, talos, transform);
+  edge = await matchEdge(vertex, talos, transforms);
   if (edge == null) {
-    console.log("no edge match, ignoring transform");
+    console.log("no edge match, ignoring transforms");
     return talos;
   }
   if (talos.halted) {
@@ -117,7 +117,7 @@ _debug = async function (graph, talos, transform) {
       talos
     });
   }
-  await run(edge, talos, transform);
+  await run(edge, talos, transforms);
   if (talos.halted) {
     console.error("encountered error running edge function", talos.error.error, talos);
     return talos;
@@ -126,7 +126,7 @@ _debug = async function (graph, talos, transform) {
       talos
     });
   }
-  await move(edge, talos, transform);
+  await move(edge, talos, transforms);
   if (talos.halted) {
     console.error("encountered error running move function", talos.error.error, talos);
     return talos;
@@ -137,4 +137,4 @@ _debug = async function (graph, talos, transform) {
   }
   return talos;
 };
-export { step, debug };
+export { step, debug, matchVertex, matchEdge, run, move };

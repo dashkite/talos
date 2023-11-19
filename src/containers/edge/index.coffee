@@ -1,19 +1,19 @@
 import * as Meta from "@dashkite/joy/metaclass"
 import * as Type from "@dashkite/joy/type"
 import { generic } from "@dashkite/joy/generic"
-import * as Create from "./create"
+import * as Make from "./make"
 
 
-create = generic 
-  name: "edge create"
+make = generic 
+  name: "edge make"
   default: ( args... ) -> 
-    throw new Error "Edge.create: input is malformed #{JSON.stringify args}"
+    throw new Error "Edge.make: input is malformed #{JSON.stringify args}"
 
-generic create, Type.isObject, ( edge ) ->
+generic make, Type.isObject, ( edge ) ->
   new Edge
-    accept: Create.accept edge.accept
-    run: Create.run edge.run
-    move: Create.move edge.move
+    accept: Make.accept edge.accept
+    run: Make.run edge.run
+    move: Make.move edge.move
 
 
 class Edge
@@ -23,7 +23,7 @@ class Edge
     Meta.getters {}
   ]
 
-  @create: create
+  @make: make
   @isType: Type.isType @
 
   clone: ->

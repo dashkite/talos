@@ -1,19 +1,19 @@
-var Edge, create;
+var Edge, make;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
 import { generic } from "@dashkite/joy/generic";
-import * as Create from "./create.js";
-create = generic({
-  name: "edge create",
+import * as Make from "./make.js";
+make = generic({
+  name: "edge make",
   default: function (...args) {
-    throw new Error(`Edge.create: input is malformed ${JSON.stringify(args)}`);
+    throw new Error(`Edge.make: input is malformed ${JSON.stringify(args)}`);
   }
 });
-generic(create, Type.isObject, function (edge) {
+generic(make, Type.isObject, function (edge) {
   return new Edge({
-    accept: Create.accept(edge.accept),
-    run: Create.run(edge.run),
-    move: Create.move(edge.move)
+    accept: Make.accept(edge.accept),
+    run: Make.run(edge.run),
+    move: Make.move(edge.move)
   });
 });
 Edge = function () {
@@ -37,7 +37,7 @@ Edge = function () {
   }
   ;
   Meta.mixin(Edge.prototype, [Meta.getters({})]);
-  Edge.create = create;
+  Edge.make = make;
   Edge.isType = Type.isType(Edge);
   return Edge;
 }.call(this);

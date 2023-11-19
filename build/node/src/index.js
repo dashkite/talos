@@ -20,7 +20,7 @@ Object.keys(_index).forEach(function (key) {
     }
   });
 });
-var _states = require("./internal/states.js");
+var _states = require("./states.js");
 Object.keys(_states).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;

@@ -9,7 +9,7 @@ test = ( $ ) ->
 
   [
     await h.test "define graph", h.target "strict-async", ->
-      graph = Graph.create
+      graph = Graph.make
         [ $start ]:
           edges: [
             accept: true
@@ -19,17 +19,17 @@ test = ( $ ) ->
         A:
           edges: [
             accept: "go"
-            run: ( talos ) ->
+            run: ( context ) ->
               await Time.sleep 1
-              talos.context.message = "made it to A, going to B"
+              context.message = "made it to A, going to B"
             move: "B"
           ]
         B:
           edges: [
               accept: false
-              run: ( talos ) ->
+              run: ( context ) ->
                 await Time.sleep 1
-                talos.context.message = "this overwrite shouldn't happen"
+                context.message = "this overwrite shouldn't happen"
               move: $halt
             ,
               accept: true
@@ -38,7 +38,7 @@ test = ( $ ) ->
           ]
     
     await h.test "define talos", h.target "strict-async", ->
-      talos = Talos.create()
+      talos = Talos.make()
 
     await h.test "run talos", h.target "strict-async", ->
       h.assert.equal $start, talos.state

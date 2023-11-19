@@ -3,6 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var _drive = require("./drive.js");
+Object.keys(_drive).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _drive[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _drive[key];
+    }
+  });
+});
 var _index = require("./edge/index.js");
 Object.keys(_index).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;

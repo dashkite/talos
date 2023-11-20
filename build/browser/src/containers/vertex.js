@@ -30,7 +30,24 @@ _make = function (type) {
     });
   });
   generic(make, isState, Type.isObject, function (state, _vertex) {
-    return make(state, _vertex.edges);
+    var edge, edges, metadata;
+    ({
+      edges,
+      ...metadata
+    } = _vertex);
+    return new Vertex({
+      metadata,
+      state,
+      edges: function () {
+        var i, len, results;
+        results = [];
+        for (i = 0, len = edges.length; i < len; i++) {
+          edge = edges[i];
+          results.push(Edge.make(edge));
+        }
+        return results;
+      }()
+    });
   });
   generic(make, isState, Type.isUndefined(function (state, _null) {
     return make(state, []);
@@ -53,10 +70,12 @@ Vertex = function () {
   class Vertex {
     constructor({
       state: state1,
-      edges: edges1
+      edges: edges1,
+      metadata: metadata1
     }) {
       this.state = state1;
       this.edges = edges1;
+      this.metadata = metadata1;
     }
     clone() {
       var edge, edges, state;

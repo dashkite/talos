@@ -1,6 +1,7 @@
 var Drive, make;
 import * as Meta from "@dashkite/joy/metaclass";
 import * as Type from "@dashkite/joy/type";
+import * as Value from "@dashkite/joy/value";
 import { generic } from "@dashkite/joy/generic";
 import { Graph } from "./graph.js";
 import { Talos } from "./talos.js";
@@ -28,8 +29,8 @@ Drive = function () {
       this.talos = talos1;
       this.step = step1;
     }
-    update(transform) {
-      return this.step(this.graph, this.talos, transform);
+    update(...transforms) {
+      return this.step(this.graph, this.talos, ...transforms);
     }
   }
   ;

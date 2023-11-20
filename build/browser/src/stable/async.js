@@ -51,8 +51,11 @@ step = generic({
 generic(step, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, ...transforms) {
   return _step(graph, talos, transforms);
 });
+generic(step, Graph.isType, Talos.isType, function (graph, talos) {
+  return _step(graph, talos, []);
+});
 generic(step, Graph.isType, negate(Talos.isType), function (graph, ...transforms) {
-  return step(graph, Talos.make(), transforms);
+  return _step(graph, Talos.make(), transforms);
 });
 _step = async function (graph, talos, transforms) {
   var edge, vertex;
@@ -82,6 +85,9 @@ debug = generic({
 });
 generic(debug, Graph.isType, Talos.isType, Type.isAny, function (graph, talos, ...transforms) {
   return _debug(graph, talos, transforms);
+});
+generic(debug, Graph.isType, Talos.isType, function (graph, talos) {
+  return _debug(graph, talos, []);
 });
 generic(debug, Graph.isType, negate(Talos.isType), function (graph, ...transforms) {
   return _debug(graph, Talos.make(), transforms);

@@ -42,8 +42,11 @@ step = generic
 generic step, Graph.isType, Talos.isType, Type.isAny, ( graph, talos, transforms... ) ->
   _step graph, talos, transforms
 
+generic step, Graph.isType, Talos.isType, ( graph, talos ) ->
+  _step graph, talos, []
+
 generic step, Graph.isType, ( negate Talos.isType ), ( graph, transforms... ) ->
-  step graph, Talos.make(), transforms
+  _step graph, Talos.make(), transforms...
 
 
 _step = ( graph, talos, transforms ) ->
@@ -68,6 +71,9 @@ debug = generic
 
 generic debug, Graph.isType, Talos.isType, Type.isAny, ( graph, talos, transforms... ) ->
   _debug graph, talos, transforms
+
+generic debug, Graph.isType, Talos.isType, ( graph, talos ) ->
+  _debug graph, talos, []
 
 generic debug, Graph.isType, ( negate Talos.isType ), ( graph, transforms... ) ->
   _debug graph, Talos.make(), transforms

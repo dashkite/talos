@@ -23,7 +23,12 @@ _make = ( type ) ->
       edges: ( Edge.make edge for edge in edges )
 
   generic make, isState, Type.isObject, ( state, _vertex ) ->
-    make state, _vertex.edges
+    { edges, metadata... } = _vertex    
+    new Vertex {
+      metadata
+      state
+      edges: ( Edge.make edge for edge in edges )
+    }
 
   generic make, isState, Type.isUndefined ( state, _null ) ->
     make state, []
@@ -43,7 +48,7 @@ _make = ( type ) ->
 
 
 class Vertex
-  constructor: ({ @state, @edges }) ->
+  constructor: ({ @state, @edges, @metadata }) ->
 
   Meta.mixin @::, [
     Meta.getters {}

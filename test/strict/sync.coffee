@@ -2,12 +2,12 @@ import { Graph, Talos, $start, $halt } from "../../src"
 import { step } from "../../src/strict/sync"
 import * as h from "../helpers"
 
-test = ( $ ) ->
+test = ->
   graph = null
   talos = null
 
   [
-    await h.test "define graph", h.target "strict-sync", ->
+    h.test "define graph", h.target "strict-sync", ->
       graph = Graph.make
         [ $start ]:
           edges: [
@@ -34,10 +34,10 @@ test = ( $ ) ->
               move: $halt
           ]
     
-    await h.test "define talos", h.target "strict-sync", ->
+    h.test "define talos", h.target "strict-sync", ->
       talos = Talos.make()
 
-    await h.test "run talos", h.target "strict-sync", ->
+    h.test "run talos", h.target "strict-sync", ->
       h.assert.equal $start, talos.state
       
       step graph, talos, null

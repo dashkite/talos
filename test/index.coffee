@@ -5,20 +5,25 @@ import * as h from "./helpers"
 
 import * as Strict from "./strict"
 import * as Stable from "./stable"
+import * as Linear from "./linear"
 
 do ->
 
-  $ = {}
-
   print await h.test "Talos", [
     await h.test "Strict", [
-      await h.test "Sync", await Strict.sync $
-      await h.test "Async", await Strict.async $
+      h.test "sync", Strict.sync()
+      h.test "async", await Strict.async()
     ]
 
     await h.test "Stable", [
-      await h.test "Sync", await Stable.sync $
-      await h.test "Async", await Stable.async $
+      h.test "sync", Stable.sync()
+      h.test "async", await Stable.async()
+    ]
+
+    await h.test "Linear Graphs", [
+      h.test "expansion", Linear.expansion()
+      h.test "pipe", Linear.pipe()
+      h.test "flow", await Linear.flow()
     ]
   ]
 

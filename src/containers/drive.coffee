@@ -1,5 +1,6 @@
 import * as Meta from "@dashkite/joy/metaclass"
 import * as Type from "@dashkite/joy/type"
+import * as Value from "@dashkite/joy/value"
 import { generic } from "@dashkite/joy/generic"
 import { Graph } from "./graph"
 import { Talos } from "./talos"
@@ -26,8 +27,8 @@ class Drive
   @make: make
   @isType: Type.isType @
 
-  update: ( transform ) ->
-    @step @graph, @talos, transform
+  update: ( transforms... ) ->
+    @step @graph, @talos, transforms...
 
 
 export {

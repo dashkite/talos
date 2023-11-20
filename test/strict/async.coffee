@@ -3,7 +3,7 @@ import { Graph, Talos, $start, $halt } from "../../src"
 import { step } from "../../src/strict/async"
 import * as h from "../helpers"
 
-test = ( $ ) ->
+test = ->
   graph = null
   talos = null
 

@@ -1,18 +1,13 @@
 $start = Symbol "start"
-$halt = Symbol "halt"
-$pause = Symbol "pause"
+$end = Symbol "end"
 
 atStart = ( x ) -> x == $start
-atHalt = ( x ) -> x == $halt
-atPause = ( x ) -> x == $pause
+atEnd = ( x ) -> x == $end
 
 
 export {
   $start
-  $halt
-  $pause
-
+  $end
   atStart
-  atHalt
-  atPause
+  atEnd
 }

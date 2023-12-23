@@ -1,18 +1,25 @@
-export * from "./containers"
-export * from "./states"
-export * from "./linear"
-import * as Stable from "./stable"
-import * as Strict from "./strict"
-import * as Linear from "./linear"
+import { Machine, Vertex, Edge } from "./machine"
+# import * as Sync from "./sync"
+# import * as Async from "./async"
 
-export {
-  Stable
-  Strict
-  Linear
-}
+machine = Machine.make
 
 export default {
-  Stable
-  Strict
-  Linear
+  Machine
+  Vertex
+  Edge
+  # Sync
+  # Async
+
+  machine
+}
+
+export {
+  Machine
+  Vertex
+  Edge
+  # Sync
+  # Async
+
+  machine
 }

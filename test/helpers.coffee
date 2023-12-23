@@ -11,9 +11,7 @@ test = ( name, value ) ->
     amenTest description: name, wait: false, value
 
 targets = do ->
-  _targets = ( process.env.targets?.split /\s+/ ) ? [ "core" ]
-  if !_targets.includes "core"
-    _targets.push "core"
+  _targets = ( process.env.targets?.split /\s+/ ) ? [ "all" ]
   _targets
 
 doesMatch = ( name ) ->

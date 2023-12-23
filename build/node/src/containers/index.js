@@ -1,73 +1,27 @@
 "use strict";
-
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-var _drive = require("./drive.js");
-Object.keys(_drive).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _drive[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _drive[key];
-    }
-  });
-});
-var _index = require("./edge/index.js");
-Object.keys(_index).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _index[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _index[key];
-    }
-  });
-});
-var _errors = require("./errors.js");
-Object.keys(_errors).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _errors[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _errors[key];
-    }
-  });
-});
-var _graph = require("./graph.js");
-Object.keys(_graph).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _graph[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _graph[key];
-    }
-  });
-});
-var _talos = require("./talos.js");
-Object.keys(_talos).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _talos[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _talos[key];
-    }
-  });
-});
-var _vertex = require("./vertex.js");
-Object.keys(_vertex).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _vertex[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _vertex[key];
-    }
-  });
-});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsInNvdXJjZXNDb250ZW50IjpbXSwic291cmNlUm9vdCI6IiJ9
-//# sourceURL=src/containers/index.coffee
+_export_star(require("./drive"), exports);
+_export_star(require("./edge"), exports);
+_export_star(require("./errors"), exports);
+_export_star(require("./graph"), exports);
+_export_star(require("./talos"), exports);
+_export_star(require("./vertex"), exports);
+function _export_star(from, to) {
+    Object.keys(from).forEach(function(k) {
+        if (k !== "default" && !Object.prototype.hasOwnProperty.call(to, k)) {
+            Object.defineProperty(to, k, {
+                enumerable: true,
+                get: function() {
+                    return from[k];
+                }
+            });
+        }
+    });
+    return from;
+}
+ //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiL0BkYXNoa2l0ZS90YWxvcy9zcmMvY29udGFpbmVycy9pbmRleC5jb2ZmZWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBQSxDQUFBOztBQUNBLE9BQUEsQ0FBQTs7QUFDQSxPQUFBLENBQUE7O0FBQ0EsT0FBQSxDQUFBOztBQUNBLE9BQUEsQ0FBQTs7QUFDQSxPQUFBLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgKiBmcm9tIFwiLi9kcml2ZVwiXG5leHBvcnQgKiBmcm9tIFwiLi9lZGdlXCJcbmV4cG9ydCAqIGZyb20gXCIuL2Vycm9yc1wiXG5leHBvcnQgKiBmcm9tIFwiLi9ncmFwaFwiXG5leHBvcnQgKiBmcm9tIFwiLi90YWxvc1wiXG5leHBvcnQgKiBmcm9tIFwiLi92ZXJ0ZXhcIiJdfQ==
+ //# sourceURL=/@dashkite/talos/src/containers/index.coffee
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9AZGFzaGtpdGUvdGFsb3Mvc3JjL2NvbnRhaW5lcnMvaW5kZXguY29mZmVlIiwiPGFub24+Il0sInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCAqIGZyb20gXCIuL2RyaXZlXCJcbmV4cG9ydCAqIGZyb20gXCIuL2VkZ2VcIlxuZXhwb3J0ICogZnJvbSBcIi4vZXJyb3JzXCJcbmV4cG9ydCAqIGZyb20gXCIuL2dyYXBoXCJcbmV4cG9ydCAqIGZyb20gXCIuL3RhbG9zXCJcbmV4cG9ydCAqIGZyb20gXCIuL3ZlcnRleFwiIixudWxsXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OztxQkFBQTtxQkFDQTtxQkFDQTtxQkFDQTtxQkFDQTtxQkFDQSJ9

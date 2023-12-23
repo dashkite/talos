@@ -1,3 +1,6 @@
-import * as Sync from "./sync.js";
-import * as Async from "./async.js";
-export { Sync, Async };
+import * as Sync from "./sync";
+import * as Async from "./async";
+export { Sync, Async }; //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsic3JjL3N0YWJsZS9pbmRleC5jb2ZmZWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxDQUFBLFFBQVAsTUFBQTs7QUFDQSxPQUFPLENBQUEsU0FBUCxNQUFBOztBQUVBLE9BQUE7RUFDRSxJQURGO0VBRUUsS0FGRiIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIFN5bmMgZnJvbSBcIi4vc3luY1wiXG5pbXBvcnQgKiBhcyBBc3luYyBmcm9tIFwiLi9hc3luY1wiXG5cbmV4cG9ydCB7XG4gIFN5bmNcbiAgQXN5bmNcbn0iXX0=
+ //# sourceURL=src/stable/index.coffee
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zdGFibGUvaW5kZXguY29mZmVlIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIFN5bmMgZnJvbSBcIi4vc3luY1wiXG5pbXBvcnQgKiBhcyBBc3luYyBmcm9tIFwiLi9hc3luY1wiXG5cbmV4cG9ydCB7XG4gIFN5bmNcbiAgQXN5bmNcbn0iXSwibmFtZXMiOlsiU3luYyIsIkFzeW5jIl0sIm1hcHBpbmdzIjoiQUFBQSxZQUFPQSxVQUFQLFNBQUE7QUFDQSxZQUFPQyxXQUFQLFVBQUE7QUFFQSxTQUNFRCxJQURGLEVBRUVDLEtBRkYifQ==

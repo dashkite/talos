@@ -1,40 +1,24 @@
 "use strict";
-
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-var _accept = require("./accept.js");
-Object.keys(_accept).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _accept[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _accept[key];
-    }
-  });
-});
-var _run = require("./run.js");
-Object.keys(_run).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _run[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _run[key];
-    }
-  });
-});
-var _move = require("./move.js");
-Object.keys(_move).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _move[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _move[key];
-    }
-  });
-});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsInNvdXJjZXNDb250ZW50IjpbXSwic291cmNlUm9vdCI6IiJ9
-//# sourceURL=src/containers/edge/make.coffee
+_export_star(require("./accept"), exports);
+_export_star(require("./run"), exports);
+_export_star(require("./move"), exports);
+function _export_star(from, to) {
+    Object.keys(from).forEach(function(k) {
+        if (k !== "default" && !Object.prototype.hasOwnProperty.call(to, k)) {
+            Object.defineProperty(to, k, {
+                enumerable: true,
+                get: function() {
+                    return from[k];
+                }
+            });
+        }
+    });
+    return from;
+}
+ //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiL0BkYXNoa2l0ZS90YWxvcy9zcmMvY29udGFpbmVycy9lZGdlL21ha2UuY29mZmVlIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQUEsQ0FBQTs7QUFDQSxPQUFBLENBQUE7O0FBQ0EsT0FBQSxDQUFBIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0ICogZnJvbSBcIi4vYWNjZXB0XCJcbmV4cG9ydCAqIGZyb20gXCIuL3J1blwiXG5leHBvcnQgKiBmcm9tIFwiLi9tb3ZlXCIiXX0=
+ //# sourceURL=/@dashkite/talos/src/containers/edge/make.coffee
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9AZGFzaGtpdGUvdGFsb3Mvc3JjL2NvbnRhaW5lcnMvZWRnZS9tYWtlLmNvZmZlZSIsIjxhbm9uPiJdLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgKiBmcm9tIFwiLi9hY2NlcHRcIlxuZXhwb3J0ICogZnJvbSBcIi4vcnVuXCJcbmV4cG9ydCAqIGZyb20gXCIuL21vdmVcIiIsbnVsbF0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7cUJBQUE7cUJBQ0E7cUJBQ0EifQ==

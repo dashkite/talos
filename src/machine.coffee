@@ -16,7 +16,7 @@ normalizeWhen = ( x ) ->
 
 normalizeMove = ( x ) ->
   if isState x
-    ( talos ) -> talos.state = x
+    ( talos, event ) -> talos.state = x
   else if Type.isFunction x
     x
   else
@@ -67,6 +67,7 @@ generic Edges.make, Type.isObject, ( object ) ->
     if key == "default"
       defaultFrame = { key, value }
     else
+      key = $end if key == "end"
       frames.push { key, value, priority }
 
   prioritize frames
@@ -101,7 +102,6 @@ generic Edges.make, isState, ( move ) ->
 
 Vertex =
   make: ( key, value ) ->
-    console.log key, value
     name: key
     edges: Edges.make value
 
@@ -117,6 +117,11 @@ Machine =
         delete graph.start
       else
         throw new Error "no start state defined for this machine"
+
+    if !graph[ $end ]?
+      if graph.end?
+        graph[ $end ] = graph.end
+        delete graph.end
 
     # TODO: Do we want a clone operation here?
     machine = graph: {}

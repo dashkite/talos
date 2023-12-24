@@ -12,7 +12,7 @@ do ->
 
   print await h.test "Talos", [
     
-    h.test "machine", Machine.basic()
+    h.test "machine expansion", Machine.expansions()
 
     # await h.test "Strict", [
     #   h.test "sync", Strict.sync()

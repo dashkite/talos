@@ -6,9 +6,6 @@ import * as h from "./helpers"
 import * as Machine from "./machine"
 import * as Sync from "./sync"
 import * as Async from "./async"
-# import * as Strict from "./strict"
-# import * as Stable from "./stable"
-# import * as Linear from "./linear"
 
 do ->
 
@@ -18,21 +15,6 @@ do ->
     h.test "sync operation", Sync.basic()
     h.test "async operation", Async.basic()
 
-    # await h.test "Strict", [
-    #   h.test "sync", Strict.sync()
-    #   h.test "async", await Strict.async()
-    # ]
-
-    # await h.test "Stable", [
-    #   h.test "sync", Stable.sync()
-    #   h.test "async", await Stable.async()
-    # ]
-
-    # await h.test "Linear Graphs", [
-    #   h.test "expansion", Linear.expansion()
-    #   h.test "pipe", Linear.pipe()
-    #   h.test "flow", await Linear.flow()
-    # ]
   ]
 
   process.exit if success then 0 else 1

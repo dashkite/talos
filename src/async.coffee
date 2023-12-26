@@ -58,7 +58,7 @@ start = ( machine ) ->
   talos = Talos.make machine
   talos.generator = Step.generator.bind talos
   talos.cycle = talos.generator()
-  talos.cycle.next()
+  talos.cycle.next() # Prime asynchronous generator
   talos
 
 

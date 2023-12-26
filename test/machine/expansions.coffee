@@ -1,11 +1,10 @@
 import { Machine, $start, $end } from "../../src"
 import * as h from "../helpers"
-import util from "node:util"
 
 
 test = ->
   [
-    h.test "compact + booleans", h.target "edge", ->
+    h.test "compact + booleans", h.target "machine", ->
       machine = Machine.make
         start:
           alpha: true
@@ -27,7 +26,7 @@ test = ->
       h.assert ( edge.move {} ) == $end
 
 
-    h.test "compact + functions", h.target "edge", ->
+    h.test "compact + functions", h.target "machine", ->
       A = -> true
 
       machine = Machine.make
@@ -40,7 +39,7 @@ test = ->
       h.assert ( edge.move {} ) == "alpha"
 
 
-    h.test "objects + booleans", h.target "edge", ->
+    h.test "objects + booleans", h.target "machine", ->
       machine = Machine.make
         start:
           alpha:
@@ -54,7 +53,7 @@ test = ->
       h.assert ( edge.move {} ) == "alpha"
 
 
-    h.test "objects + functions", h.target "edge", ->
+    h.test "objects + functions", h.target "machine", ->
       A = -> true
 
       machine = Machine.make
@@ -69,8 +68,20 @@ test = ->
       h.assert edge.run() == 2
       h.assert ( edge.move {} ) == "alpha"
 
+    h.test "objects - when and move", h.target "machine", ->
+      A = -> true
 
-    h.test "arrays + booleans", h.target "edge", ->
+      machine = Machine.make
+        start:
+          alpha: run: -> 1 + 1
+
+      edge = machine.graph[ $start ].edges[0]
+      h.assert edge.when() == true
+      h.assert edge.run() == 2
+      h.assert ( edge.move {} ) == "alpha"
+
+
+    h.test "arrays + booleans", h.target "machine", ->
       machine = Machine.make
         start: [
           when: true
@@ -83,7 +94,7 @@ test = ->
       h.assert ( edge.move {} ) == "alpha"
 
 
-    h.test "arrays + functions", h.target "edge", ->
+    h.test "arrays + functions", h.target "machine", ->
       A = -> true
 
       machine = Machine.make
@@ -99,7 +110,7 @@ test = ->
       h.assert ( edge.move {} ) == "alpha"
 
 
-    h.test "compact with default", h.target "edge", ->
+    h.test "compact with default", h.target "machine", ->
       machine = Machine.make
         start:
           ignore: false
@@ -111,7 +122,7 @@ test = ->
       h.assert ( edge.move {} ) == "alpha"
 
 
-    h.test "terminal function", h.target "edge", ->
+    h.test "terminal function", h.target "machine", ->
       machine = Machine.make
         start: -> 1 + 1
 
@@ -121,6 +132,15 @@ test = ->
       h.assert ( edge.move {} ) == $end
 
 
+    h.test "expansion from linear composition", h.target "machine", ->
+      A = ->
+      B = ->
+      C = ->
+      
+      machine = Machine.make [ A, B, C ]
+
+      h.assert machine.graph[ $start ].edges[0].run == A
+      h.assert machine.graph[ "2" ].edges[0].move({}) == $end
 
   ]
 

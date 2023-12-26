@@ -4,6 +4,8 @@ import print from "@dashkite/amen-console"
 import * as h from "./helpers"
 
 import * as Machine from "./machine"
+import * as Sync from "./sync"
+import * as Async from "./async"
 # import * as Strict from "./strict"
 # import * as Stable from "./stable"
 # import * as Linear from "./linear"
@@ -13,6 +15,8 @@ do ->
   print await h.test "Talos", [
     
     h.test "machine expansion", Machine.expansions()
+    h.test "sync operation", Sync.basic()
+    h.test "async operation", Async.basic()
 
     # await h.test "Strict", [
     #   h.test "sync", Strict.sync()

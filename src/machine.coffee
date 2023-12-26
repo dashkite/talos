@@ -3,6 +3,13 @@ import * as Type from "@dashkite/joy/type"
 import { $start, $end } from "./states"
 
 isState = ( x ) -> ( Type.isString x ) || ( Type.isSymbol x )
+areVertexEdges = ( x ) ->
+  return false if !x.edges?
+  return false if !Type.isArray x.edges
+  for edge in x.edges when !Type.isObject edge
+    return false
+  true
+
 
 normalizeWhen = ( x ) ->
   if isState x
@@ -47,7 +54,7 @@ generic Edge.make, isState, Type.isAny, ( move, _when ) ->
   Edge.make { move, when: _when }
 
 generic Edge.make, isState, Type.isObject, ( move, object ) ->
-  when: normalizeWhen object.when
+  when: normalizeWhen object.when ? true
   run: object.run
   move: normalizeMove object.move ? move
 
@@ -98,6 +105,11 @@ generic Edges.make, Type.isFunction, ( f ) ->
 generic Edges.make, isState, ( move ) ->
   Edges.make [ move ]: true
 
+generic Edges.make, areVertexEdges, ({ edges }) ->
+  for edge in edges
+    when: edge.when
+    run: edge.run
+    move: edge.move
 
 
 Vertex =
@@ -107,10 +119,30 @@ Vertex =
 
 
 Machine =
-  make: ( graph ) ->
-    if ! Type.isObject graph
-      throw new Error "Talos machine representation is malformed"
+  make: ( value ) -> 
+    _graph = Machine.format value
+    machine = graph: {}
 
+    for key in Reflect.ownKeys _graph
+      value = _graph[ key ]
+      machine.graph[ key ] = Vertex.make key, value
+    
+    machine
+
+
+  clone: ( _machine ) ->
+    Machine.make _machine.graph
+
+  format: ( value ) ->
+    if Type.isObject value
+      graph = {}
+      for key in Reflect.ownKeys value
+        graph[ key ] = value[ key ]
+    else if Type.isArray value
+      graph = Machine.expand value
+    else
+      throw new Error "Talos machine representation is malformed"
+    
     if !graph[ $start ]?
       if graph.start?
         graph[ $start ] = graph.start
@@ -123,14 +155,21 @@ Machine =
         graph[ $end ] = graph.end
         delete graph.end
 
-    # TODO: Do we want a clone operation here?
-    machine = graph: {}
+    graph
 
-    for key in Reflect.ownKeys graph
-      value = graph[ key ]
-      machine.graph[ key ] = Vertex.make key, value
+  expand: ( fx ) ->
+    graph = {}    
+    for f, i in fx
+      current = if i == 0 then $start else "#{ i }"
+      next = if i == fx.length - 1 then $end else "#{ i + 1 }"
+
+      graph[ current ] = 
+        next:
+          when: true
+          run: f
+          move: next
     
-    machine
+    graph
 
 
 export { Machine, Vertex, Edges, Edge }

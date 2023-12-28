@@ -4,10 +4,8 @@ import * as Type from "@dashkite/joy/type"
 import log from "@dashkite/kaiko"
 import { Machine } from "./machine"
 import { Talos } from "./talos"
+import { isMachine, isIteratorKind } from "./types"
 
-# These async functions can consume sync iterators, so long as we let async
-# behavior take over downstream.
-isIterator = ( x ) -> x[ Symbol.asyncIterator ]? || x[ Symbol.iterator ]?
 
 Step =
   matchVertex: ( talos ) ->
@@ -54,7 +52,8 @@ start = generic
   default: ( args... ) ->
     throw new Error "talos sync start: input is malformed #{ JSON.stringify args }"
 
-generic start, Type.isObject, ( machine ) ->
+
+generic start, isMachine, ( machine ) ->
   talos = Talos.make machine
   start talos
 
@@ -68,12 +67,12 @@ generic start, Talos.isType, ( talos ) ->
     yield talos
   return # prevents accumulation
 
-generic start, Type.isObject, isIterator, ( machine, events ) ->
+generic start, isMachine, isIteratorKind, ( machine, events ) ->
   talos = Talos.make machine
   start talos, events
 
 # Create generator where state machine consumes values from iterator.
-generic start, Talos.isType, isIterator, ( talos, events ) ->
+generic start, Talos.isType, isIteratorKind, ( talos, events ) ->
   for await event from events
     for await talos from Step.tick talos, event
       if talos.ended
@@ -82,7 +81,7 @@ generic start, Talos.isType, isIterator, ( talos, events ) ->
     yield talos
   return # prevents accumulation
 
-generic start, Type.isObject, Type.isObject, ( machine, context ) ->
+generic start, isMachine, Type.isObject, ( machine, context ) ->
   talos = Talos.make machine
   talos.context = context
   start talos
@@ -91,12 +90,12 @@ generic start, Talos.isType, Type.isObject, ( talos, context ) ->
   talos.context = context
   start talos
 
-generic start, Type.isObject, Type.isObject, isIterator, ( machine, context, events ) ->
+generic start, isMachine, Type.isObject, isIteratorKind, ( machine, context, events ) ->
   talos = Talos.make machine
   talos.context = context
   start talos, events
 
-generic start, Talos.isType, Type.isObject, isIterator, ( talos, context, events ) ->
+generic start, Talos.isType, Type.isObject, isIteratorKind, ( talos, context, events ) ->
   talos.context = context
   start talos, events
 
@@ -107,42 +106,24 @@ run = generic
   default: ( args... ) -> 
     throw new Error "talos sync run: input is malformed #{ JSON.stringify args }"
 
-generic run, isIterator, ( cycle ) ->
+# Further convenience to support automatically using start.
+generic run, Type.isAny, ( args... ) ->
+  run start args...
+
+generic run, isIteratorKind, ( cycle ) ->
   for await talos from cycle
     result = talos
   result
 
-# Convenience function to provide a curried functional interface for cycle run.
-# "start" allows first argument to be talos instance or machine definition.
-build = ( talos ) ->
-  ( args... ) -> run start talos, args...
+generic run, Type.isArray, ( fx ) ->
+  run start fx
 
-flow = ( fx ) ->
-  machine = Machine.make fx
-  ( context ) -> 
-    cycle = start machine, context
-    talos = await run cycle
-    if talos.error?
-      throw talos.error
-    talos.context
+generic run, Type.isArray, Type.isAny, ( fx, args... ) ->
+  run ( start fx ), args...
 
-flowWith = Fn.curry ( f, gx ) ->
-  machine = Machine.make gx
-  ( context ) -> 
-    cycle = start machine, context
-    result = null
-    for await talos from cycle
-      await f talos
-      result = talos
-    if result.error?
-      throw result.error
-    result.context
 
 export {
   Step  
   start
   run
-  build
-  flow
-  flowWith
 }

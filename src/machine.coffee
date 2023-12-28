@@ -129,15 +129,12 @@ Machine =
     
     machine
 
-
-  clone: ( _machine ) ->
-    Machine.make _machine.graph
-
   format: ( value ) ->
     if Type.isObject value
       graph = {}
-      for key in Reflect.ownKeys value
-        graph[ key ] = value[ key ]
+      _value = if value.graph? then value.graph else value
+      for key in Reflect.ownKeys _value
+        graph[ key ] = _value[ key ]
     else if Type.isArray value
       graph = Machine.expand value
     else

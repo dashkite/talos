@@ -4,6 +4,7 @@ import * as Type from "@dashkite/joy/type"
 import log from "@dashkite/kaiko"
 import { Machine } from "./machine"
 import { Talos } from "./talos"
+import { isMachine } from "./types"
 
 
 Step =
@@ -51,7 +52,7 @@ start = generic
   default: ( args... ) ->
     throw new Error "talos sync start: input is malformed #{ JSON.stringify args }"
 
-generic start, Type.isObject, ( machine ) ->
+generic start, isMachine, ( machine ) ->
   talos = Talos.make machine
   start talos
 
@@ -65,7 +66,7 @@ generic start, Talos.isType, ( talos ) ->
     yield talos
   return # prevents accumulation
 
-generic start, Type.isObject, Type.isIterable, ( machine, events ) ->
+generic start, isMachine, Type.isIterable, ( machine, events ) ->
   talos = Talos.make machine
   start talos, events
 
@@ -79,7 +80,7 @@ generic start, Talos.isType, Type.isIterable, ( talos, events ) ->
     yield talos
   return # prevents accumulation
 
-generic start, Type.isObject, Type.isObject, ( machine, context ) ->
+generic start, isMachine, Type.isObject, ( machine, context ) ->
   talos = Talos.make machine
   talos.context = context
   start talos
@@ -88,7 +89,7 @@ generic start, Talos.isType, Type.isObject, ( talos, context ) ->
   talos.context = context
   start talos
 
-generic start, Type.isObject, Type.isObject, Type.isIterable, ( machine, context, events ) ->
+generic start, isMachine, Type.isObject, Type.isIterable, ( machine, context, events ) ->
   talos = Talos.make machine
   talos.context = context
   start talos, events
@@ -104,42 +105,23 @@ run = generic
   default: ( args... ) -> 
     throw new Error "talos sync run: input is malformed #{ JSON.stringify args }"
 
+# Further convenience to support automatically using start.
+generic run, Type.isAny, ( args... ) ->
+  run start args...
+
 generic run, Type.isIterable, ( cycle ) ->
   for talos from cycle
     result = talos
   result
 
-# Convenience function to provide a curried functional interface for cycle run.
-# "start" allows first argument to be talos instance or machine definition.
-build = ( talos ) ->
-  ( args... ) -> run start talos, args...
+generic run, Type.isArray, ( fx ) ->
+  run start fx
 
-pipe = ( fx ) ->
-  machine = Machine.make fx
-  ( context ) -> 
-    cycle = start machine, context
-    talos = run cycle
-    if talos.error?
-      throw talos.error
-    talos.context
-
-pipeWith = Fn.curry ( f, gx ) ->
-  machine = Machine.make gx
-  ( context ) -> 
-    cycle = start machine, context
-    result = null
-    for talos from cycle
-      f talos
-      result = talos
-    if result.error?
-      throw result.error
-    result.context
+generic run, Type.isArray, Type.isAny, ( fx, args... ) ->
+  run ( start fx ), args...
 
 export {
   Step  
   start
   run
-  build
-  pipe
-  pipeWith
 }

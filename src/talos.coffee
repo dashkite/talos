@@ -19,7 +19,7 @@ class Talos
   ]
 
   @make: ( _machine ) -> 
-    machine = Machine.clone _machine
+    machine = Machine.make _machine
     new Talos { machine }
   
   @isType: Type.isType @

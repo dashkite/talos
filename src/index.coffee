@@ -7,14 +7,16 @@ import { $start, $end, atStart, atEnd } from "./states"
 
 machine = Machine.make
 pipe = Sync.pipe
+pipeWith = Sync.pipeWith
 flow = Async.flow
+flowWith = Async.flowWith
 
 export default {
   Machine, Vertex, Edge
   Talos
   Sync, Async
   $start, $end, atStart, atEnd
-  machine, pipe, flow
+  machine, pipe, pipeWith, flow, flowWith
 }
 
 export {
@@ -22,5 +24,5 @@ export {
   Talos
   Sync, Async
   $start, $end, atStart, atEnd
-  machine, pipe, flow
+  machine, pipe, pipeWith, flow, flowWith
 }

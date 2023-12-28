@@ -1,5 +1,5 @@
 import { Machine, Talos, $start, $end } from "../../src"
-import { start, run, build, pipe } from "../../src/sync"
+import { start, run, build, pipe, pipeWith } from "../../src/sync"
 import * as Type from "@dashkite/joy/type"
 import * as h from "../helpers"
 
@@ -32,18 +32,18 @@ test = ->
 
   [
     h.test "start", h.target "sync", ->
-      talos = start A
-      h.assert Talos.isType talos
+      cycle = start A
+      h.assert Type.isIterator cycle
 
-    h.test "run while waiting on events", h.target "sync", ->
+    h.test "run while consuming on events", h.target "sync", ->
       events = [ 1, 2, 3 ]
-      talos = start A
-      run talos, sum: 0, events
-      h.assert.equal 6, talos.context?.sum
+      cycle = start A, sum: 0, events
+      talos = run cycle
+      h.assert.equal 6, talos?.context?.sum
 
-    h.test "auto-run without events", h.target "sync", ->
-      talos = start B
-      run talos, product: 1
+    h.test "run without events and reconsume context", h.target "sync", ->
+      cycle = start B, product: 1
+      talos = run cycle
       h.assert.equal 8, talos.context?.product
 
     h.test "build", h.target "sync", ->
@@ -53,14 +53,29 @@ test = ->
       h.assert.equal 8, talos.context?.product
 
     h.test "pipe", h.target "sync", ->
-      a = ( talos, context ) -> context.sum = 1
-      b = ( talos, context ) -> context.sum += 2
-      c = ( talos, context ) -> context.sum += 3 
+      a = ( talos ) -> talos.context.sum = 1
+      b = ( talos ) -> talos.context.sum += 2
+      c = ( talos ) -> talos.context.sum += 3 
 
       f = pipe [ a, b, c ]
       h.assert Type.isFunction f
       context = f {}
       h.assert.equal 6, context?.sum
+
+    h.test "pipeWith", h.target "sync", ->
+      a = ( talos ) -> talos.context.sum = 1
+      b = ( talos ) -> talos.context.sum += 2
+      c = ( talos ) -> talos.context.sum += 3 
+      log = ( talos ) ->
+        talos.context.product ?= 1 
+        talos.context.product *= talos.context.sum
+        # console.log talos.context.product
+
+      f = pipeWith log, [ a, b, c ]
+      h.assert Type.isFunction f
+      context = f {}
+      h.assert.equal 6, context?.sum
+      h.assert.equal 18, context?.product
 
   ]
 

@@ -1,6 +1,6 @@
 import * as Type from "@dashkite/joy/type"
 
-# These async functions can consume sync iterators, so long as we let async
+# Async state machines can consume sync event iterators, so long as we let async
 # behavior take over downstream.
 isIteratorKind = ( x ) -> x[ Symbol.asyncIterator ]? || x[ Symbol.iterator ]?
 

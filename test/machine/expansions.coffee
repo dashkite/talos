@@ -139,8 +139,9 @@ test = ->
       
       machine = Machine.make [ A, B, C ]
 
-      h.assert machine.graph[ $start ].edges[0].run == A
-      h.assert machine.graph[ "2" ].edges[0].move({}) == $end
+      h.assert machine.graph[ $start ].edges[0].move({}) == "A"
+      h.assert machine.graph[ "A" ].edges[0].run == A
+      h.assert machine.graph[ "C" ].edges[0].move({}) == $end
 
   ]
 

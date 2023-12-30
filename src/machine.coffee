@@ -40,10 +40,7 @@ prioritize = ( frames ) ->
 
 
 Edge =
-  make: generic 
-    name: "talos: make edge"
-    default: ( args... ) -> 
-      throw new Error "talos make edge: input is malformed #{ JSON.stringify args }"
+  make: generic name: "talos: edge make"
 
 generic Edge.make, Type.isObject, ( object ) ->
   when: normalizeWhen object.when
@@ -60,10 +57,7 @@ generic Edge.make, isState, Type.isObject, ( move, object ) ->
 
 
 Edges = 
-  make: generic 
-    name: "talos: make edges"
-    default: ( args... ) -> 
-      throw new Error "talos make edges: input is malformed #{ JSON.stringify args }"
+  make: generic name: "talos: edges make"
 
 generic Edges.make, Type.isObject, ( object ) ->
   frames = []
@@ -155,17 +149,44 @@ Machine =
     graph
 
   expand: ( fx ) ->
-    graph = {}    
+    if fx.length == 0
+      return 
+        [ $start ]: 
+          end:
+            when: true
+            next: $end
+
+    names = {}
+    getName = ( f ) ->
+      name = f.name || "anonymous"
+      if names[ name ]?
+        "#{ name }-#{ ++names[ name ] }"
+      else
+        names[ name ] = 1
+        name
+
+
+    graph = {}
+    cache = {}
     for f, i in fx
-      current = if i == 0 then $start else "#{ i }"
-      next = if i == fx.length - 1 then $end else "#{ i + 1 }"
+      current = cache.current ? getName f
+      if i == 0
+        cache.startName = current
+      
+      if i == fx.length - 1
+        next = $end
+      else
+        next = getName fx[ i + 1 ]
 
       graph[ current ] = 
         next:
           when: true
           run: f
           move: next
+
+      cache.current = next
     
+    graph[ $start ] = next: { when: true, move: cache.startName }
     graph
 
 

@@ -47,10 +47,7 @@ Step =
     yield talos
 
 
-start = generic 
-  name: "talos: sync start"
-  default: ( args... ) ->
-    throw new Error "talos sync start: input is malformed #{ JSON.stringify args }"
+start = generic name: "talos: sync start"
 
 generic start, isMachine, ( machine ) ->
   talos = Talos.make machine
@@ -100,28 +97,31 @@ generic start, Talos.isType, Type.isObject, Type.isIterable, ( talos, context, e
 
 
 # Convenience function to keep going and only return the final talos.
-run = generic 
-  name: "talos: sync run"
-  default: ( args... ) -> 
-    throw new Error "talos sync run: input is malformed #{ JSON.stringify args }"
+run = generic name: "talos: sync run"
 
 # Further convenience to support automatically using start.
 generic run, Type.isAny, ( args... ) ->
   run start args...
 
-generic run, Type.isIterable, ( cycle ) ->
-  for talos from cycle
+generic run, Type.isIterator, ( iterator ) ->
+  for talos from iterator
     result = talos
   result
 
-generic run, Type.isArray, ( fx ) ->
-  run start fx
+pipe = ( fx ) ->
+  ( args... ) ->
+    talos = run start fx, args...
+    if talos.error?
+      throw talos.error
+    talos.context
 
-generic run, Type.isArray, Type.isAny, ( fx, args... ) ->
-  run ( start fx ), args...
-
+export * from "./states"
+export * from "./machine"
+export * from "./talos"
+export * from "./types"
 export {
   Step  
   start
   run
+  pipe
 }

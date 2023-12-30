@@ -1,5 +1,5 @@
-import { Machine, Talos, $start, $end } from "../../src"
-import { start, run } from "../../src/sync"
+import { Machine, Talos, $start, $end, 
+  start, run, pipe } from "../../src/sync"
 import * as Type from "@dashkite/joy/type"
 import * as h from "../helpers"
 
@@ -32,8 +32,7 @@ test = ->
 
   [
     h.test "start", h.target "sync", ->
-      cycle = start A
-      h.assert Type.isIterator cycle
+      h.assert Type.isIterator start A
 
     h.test "run while consuming events", h.target "sync", ->
       events = [ 1, 2, 3 ]
@@ -44,14 +43,23 @@ test = ->
       talos = run B, product: 1
       h.assert.equal 8, talos.context?.product
 
-    h.test "functional composition", h.target "sync", ->
+    h.test "pipe functional composition", h.target "sync", ->
       a = ( talos ) -> talos.context.sum = 1
       b = ( talos ) -> talos.context.sum += 2
-      c = ( talos ) -> talos.context.sum += 3 
+      b2 = -> throw new Error "b2"
+      c = ( talos ) -> talos.context.sum += 3
       
-      talos = run [ a, b, c ]
-      h.assert.equal 6, talos?.context?.sum
+      f = pipe [ a, b, b, c ]
+      h.assert Type.isFunction f
+      context = f()
+      h.assert.equal 8, context?.sum
 
+      g = pipe [ a, b, b2, c ]
+      try
+        g()
+        throw new Error "did not throw"
+      catch error
+        h.assert error.message == "b2"
   ]
 
 export { test as basic }

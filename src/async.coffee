@@ -11,7 +11,7 @@ Step =
   matchVertex: ( talos ) ->
     vertex = talos.machine.graph[ talos.state ]
     if !vertex?
-      talos.catch new Error "talos state is not in machine graph"
+      talos.catch new Error "talos: state is not in machine graph"
     vertex
 
   matchEdge: ( vertex, talos, event ) ->
@@ -21,7 +21,7 @@ Step =
           return edge
       catch error
         return talos.catch error
-    talos.catch new Error "no matching when condition"
+    talos.catch new Error "talos: no matching when condition"
 
   run: ( edge, talos, event ) ->
     if edge.run?
@@ -47,11 +47,7 @@ Step =
     yield talos
 
 
-start = generic 
-  name: "talos: sync start"
-  default: ( args... ) ->
-    throw new Error "talos sync start: input is malformed #{ JSON.stringify args }"
-
+start = generic name: "talos: sync start"
 
 generic start, isMachine, ( machine ) ->
   talos = Talos.make machine
@@ -71,7 +67,7 @@ generic start, isMachine, isIteratorKind, ( machine, events ) ->
   talos = Talos.make machine
   start talos, events
 
-# Create generator where state machine consumes values from iterator.
+# Create generator where state machine consumes values from reactor.
 generic start, Talos.isType, isIteratorKind, ( talos, events ) ->
   for await event from events
     for await talos from Step.tick talos, event
@@ -101,29 +97,31 @@ generic start, Talos.isType, Type.isObject, isIteratorKind, ( talos, context, ev
 
 
 # Convenience function to keep going and only return the final talos.
-run = generic 
-  name: "talos: sync run"
-  default: ( args... ) -> 
-    throw new Error "talos sync run: input is malformed #{ JSON.stringify args }"
+run = generic name: "talos: sync run"
 
 # Further convenience to support automatically using start.
 generic run, Type.isAny, ( args... ) ->
   run start args...
 
-generic run, isIteratorKind, ( cycle ) ->
-  for await talos from cycle
+generic run, Type.isReactor, ( reactor ) ->
+  for await talos from reactor
     result = talos
   result
 
-generic run, Type.isArray, ( fx ) ->
-  run start fx
+flow = ( fx ) ->
+  ( args... ) ->
+    talos = await run start fx, args...
+    if talos.error?
+      throw talos.error
+    talos.context
 
-generic run, Type.isArray, Type.isAny, ( fx, args... ) ->
-  run ( start fx ), args...
-
-
+export * from "./states"
+export * from "./machine"
+export * from "./talos"
+export * from "./types"
 export {
   Step  
   start
   run
+  flow
 }

@@ -1,7 +1,6 @@
 import { generic } from "@dashkite/joy/generic"
 import * as Fn from "@dashkite/joy/function"
 import * as Type from "@dashkite/joy/type"
-import log from "@dashkite/kaiko"
 import { Machine } from "./machine"
 import { Talos } from "./talos"
 import { isMachine, isIteratorKind } from "./types"
@@ -47,7 +46,7 @@ Step =
     yield talos
 
 
-start = generic name: "talos: sync start"
+start = generic name: "talos: async start"
 
 generic start, isMachine, ( machine ) ->
   talos = Talos.make machine
@@ -97,7 +96,7 @@ generic start, Talos.isType, Type.isObject, isIteratorKind, ( talos, context, ev
 
 
 # Convenience function to keep going and only return the final talos.
-run = generic name: "talos: sync run"
+run = generic name: "talos: async run"
 
 # Further convenience to support automatically using start.
 generic run, Type.isAny, ( args... ) ->

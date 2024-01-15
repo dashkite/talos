@@ -1,7 +1,6 @@
 import { generic } from "@dashkite/joy/generic"
 import * as Fn from "@dashkite/joy/function"
 import * as Type from "@dashkite/joy/type"
-import log from "@dashkite/kaiko"
 import { Machine } from "./machine"
 import { Talos } from "./talos"
 import { isMachine } from "./types"

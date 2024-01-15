@@ -149,6 +149,9 @@ Machine =
     graph
 
   expand: ( fx ) ->
+    for f in fx when !f?
+      throw new Error "undefined item in function composition array"
+    
     if fx.length == 0
       return 
         [ $start ]: 

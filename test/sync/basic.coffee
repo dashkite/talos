@@ -10,7 +10,7 @@ grow = ( talos ) ->
 
 
 test = ->
-  A = Machine.make
+  A = Machine.make graph:
     start:
       hold: 
         run: add
@@ -18,7 +18,7 @@ test = ->
       hold:
         run: add
 
-  B = Machine.make
+  B = Machine.make graph:
     start:
       first: 
         run: grow

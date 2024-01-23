@@ -5,7 +5,7 @@ import * as h from "../helpers"
 test = ->
   [
     h.test "compact + booleans", h.target "machine", ->
-      machine = Machine.make
+      machine = Machine.make graph:
         start:
           alpha: true
         alpha:
@@ -29,7 +29,7 @@ test = ->
     h.test "compact + functions", h.target "machine", ->
       A = -> true
 
-      machine = Machine.make
+      machine = Machine.make graph:
         start:
           alpha: A
 
@@ -40,7 +40,7 @@ test = ->
 
 
     h.test "objects + booleans", h.target "machine", ->
-      machine = Machine.make
+      machine = Machine.make graph:
         start:
           alpha:
             when: true
@@ -56,7 +56,7 @@ test = ->
     h.test "objects + functions", h.target "machine", ->
       A = -> true
 
-      machine = Machine.make
+      machine = Machine.make graph:
         start:
           alpha:
             when: A
@@ -71,7 +71,7 @@ test = ->
     h.test "objects - when and move", h.target "machine", ->
       A = -> true
 
-      machine = Machine.make
+      machine = Machine.make graph:
         start:
           alpha: run: -> 1 + 1
 
@@ -82,7 +82,7 @@ test = ->
 
 
     h.test "arrays + booleans", h.target "machine", ->
-      machine = Machine.make
+      machine = Machine.make graph:
         start: [
           when: true
           move: "alpha"
@@ -97,7 +97,7 @@ test = ->
     h.test "arrays + functions", h.target "machine", ->
       A = -> true
 
-      machine = Machine.make
+      machine = Machine.make graph:
         start: [
           when: A
           run: -> 1 + 1
@@ -111,7 +111,7 @@ test = ->
 
 
     h.test "compact with default", h.target "machine", ->
-      machine = Machine.make
+      machine = Machine.make graph:
         start:
           ignore: false
           default: "alpha"
@@ -123,7 +123,7 @@ test = ->
 
 
     h.test "terminal function", h.target "machine", ->
-      machine = Machine.make
+      machine = Machine.make graph:
         start: -> 1 + 1
 
       edge = machine.graph[ $start ].edges[0]

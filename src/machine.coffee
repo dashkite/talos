@@ -115,7 +115,9 @@ Vertex =
 Machine =
   make: ( value ) -> 
     _graph = Machine.format value
-    machine = graph: {}
+    machine = 
+      name: value.name ? "anonymous"
+      graph: {}
 
     for key in Reflect.ownKeys _graph
       value = _graph[ key ]
@@ -126,9 +128,8 @@ Machine =
   format: ( value ) ->
     if Type.isObject value
       graph = {}
-      _value = if value.graph? then value.graph else value
-      for key in Reflect.ownKeys _value
-        graph[ key ] = _value[ key ]
+      for key in Reflect.ownKeys value.graph
+        graph[ key ] = value.graph[ key ]
     else if Type.isArray value
       graph = Machine.expand value
     else

@@ -6,6 +6,7 @@ import { $start, $end, atStart, atEnd } from "./states"
 
 class Talos
   constructor: ({ @machine }) ->
+    @name = @machine.name
     @state = $start
     @context = {}
     @error = null

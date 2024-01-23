@@ -3,7 +3,7 @@ import * as Fn from "@dashkite/joy/function"
 import * as Type from "@dashkite/joy/type"
 import { Machine } from "./machine"
 import { Talos } from "./talos"
-import { isMachine, isIteratorKind } from "./types"
+import { isMachine, isIteratorKind, isGeneratorFunctionKind } from "./types"
 
 
 Step =
@@ -23,11 +23,16 @@ Step =
     talos.catch new Error "talos: no matching when condition"
 
   run: ( edge, talos, event ) ->
-    if edge.run?
-      try
+    try
+      if isGeneratorFunctionKind edge.run
+        for await inner from edge.run talos, event
+          yield inner
+        return  # prevent accumulation
+      else if Type.isFunction edge.run
         await edge.run talos, event
-      catch error
-        talos.catch error
+    catch error
+      talos.catch error
+      yield talos
 
   move: ( edge, talos, event ) ->
     try
@@ -37,13 +42,14 @@ Step =
 
   tick: ( talos, event ) ->
     vertex = Step.matchVertex talos
-    yield talos
+    yield talos if talos.ended
     edge = await Step.matchEdge vertex, talos, event
-    yield talos
-    await Step.run edge, talos, event
-    yield talos
+    yield talos if talos.ended
+    for await inner from Step.run edge, talos, event
+      yield inner
+    yield talos if talos.ended
     await Step.move edge, talos, event
-    yield talos
+    yield talos   # this is the happy-path yield
 
 
 start = generic name: "talos: async start"
@@ -55,12 +61,9 @@ generic start, isMachine, ( machine ) ->
 # Create generator where state machine consumes its own context repeatedly.
 generic start, Talos.isType, ( talos ) ->
   loop
-    for await talos from Step.tick talos, talos.context
-      if talos.ended
-        yield talos
-        return
-    yield talos
-  return # prevents accumulation
+    for await current from Step.tick talos, talos.context
+      yield current
+      return if talos.ended
 
 generic start, isMachine, isIteratorKind, ( machine, events ) ->
   talos = Talos.make machine
@@ -69,12 +72,9 @@ generic start, isMachine, isIteratorKind, ( machine, events ) ->
 # Create generator where state machine consumes values from reactor.
 generic start, Talos.isType, isIteratorKind, ( talos, events ) ->
   for await event from events
-    for await talos from Step.tick talos, event
-      if talos.ended
-        yield talos
-        return
-    yield talos
-  return # prevents accumulation
+    for await current from Step.tick talos, event
+      yield current
+      return if talos.ended
 
 generic start, isMachine, Type.isObject, ( machine, context ) ->
   talos = Talos.make machine

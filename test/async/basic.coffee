@@ -6,7 +6,7 @@ import * as h from "../helpers"
 add = ( talos, event ) ->
   talos.context.sum += event
 grow = ( talos ) ->
-  talos.context.product *= 2
+  talos.context.product *= await 2
 
 
 test = ->

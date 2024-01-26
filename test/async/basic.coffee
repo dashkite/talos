@@ -1,5 +1,4 @@
-import { Machine, Talos, $start, $end,
-  start, run, flow } from "../../src/async"
+import { Machine, Talos, $start, $end, start, run, flow } from "../../src/async"
 import * as Type from "@dashkite/joy/type"
 import * as h from "../helpers"
 
@@ -65,6 +64,15 @@ test = ->
       catch error
         h.assert error.message == "b2"
 
+    h.test "handles error", h.target "async", ->
+      a = ( talos ) -> talos.context.sum = await 1
+      b = ( talos ) -> throw new Error "b"
+      c = ( talos ) -> talos.context.sum += await 3 
+
+      talos = await run start [ a, b, c ]
+      h.assert talos.failure
+      h.assert.equal $end, talos.state
+      h.assert.equal "b", talos.previousState
   ]
 
 export { test as basic }

@@ -25,18 +25,17 @@ Step =
   run: ( edge, talos, event ) ->
     try
       if isGeneratorFunctionKind edge.run
-        for await inner from edge.run talos, event
-          yield inner
-        return  # prevent accumulation
+        yield from await edge.run talos, event
       else if Type.isFunction edge.run
         await edge.run talos, event
     catch error
       talos.catch error
-      yield talos
 
   move: ( edge, talos, event ) ->
     try
+      previous = talos.state
       await edge.move talos, event
+      talos.previousState = previous
     catch error
       talos.catch error
 
@@ -45,8 +44,7 @@ Step =
     yield talos if talos.ended
     edge = await Step.matchEdge vertex, talos, event
     yield talos if talos.ended
-    for await inner from Step.run edge, talos, event
-      yield inner
+    yield from await Step.run edge, talos, event
     yield talos if talos.ended
     await Step.move edge, talos, event
     yield talos   # this is the happy-path yield

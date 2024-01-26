@@ -7,6 +7,7 @@ import { $start, $end, atStart, atEnd } from "./states"
 class Talos
   constructor: ({ @machine }) ->
     @name = @machine.name
+    @previousState = null
     @state = $start
     @context = {}
     @error = null
@@ -26,6 +27,7 @@ class Talos
   @isType: Type.isType @
 
   end: ->
+    @previousState = @state
     @state = $end
 
   catch: ( error ) ->

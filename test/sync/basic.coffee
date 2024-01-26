@@ -1,5 +1,4 @@
-import { Machine, Talos, $start, $end, 
-  start, run, pipe } from "../../src/sync"
+import { Machine, Talos, $start, $end, start, run, pipe } from "../../src/sync"
 import * as Type from "@dashkite/joy/type"
 import * as h from "../helpers"
 
@@ -60,6 +59,16 @@ test = ->
         throw new Error "did not throw"
       catch error
         h.assert error.message == "b2"
+
+    h.test "handles error", h.target "sync", ->
+      a = ( talos ) -> talos.context.sum = await 1
+      b = ( talos ) -> throw new Error "b"
+      c = ( talos ) -> talos.context.sum += await 3 
+
+      talos = run start [ a, b, c ]
+      h.assert talos.failure
+      h.assert.equal $end, talos.state
+      h.assert.equal "b", talos.previousState
   ]
 
 export { test as basic }

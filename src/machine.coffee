@@ -56,6 +56,15 @@ generic Edge.make, isState, Type.isObject, ( move, object ) ->
   move: normalizeMove object.move ? move
 
 
+isEdgeShorthand = ( value ) ->
+  if !Type.isObject value
+    return false
+  allowed = [ "when", "run", "move" ]
+  for key in (Reflect.ownKeys value) when key not in allowed
+    return false
+  true
+
+
 Edges = 
   make: generic name: "talos: edges make"
 
@@ -88,6 +97,13 @@ generic Edges.make, Type.isObject, ( object ) ->
   edges
   
 
+generic Edges.make, isEdgeShorthand, ( short ) ->
+  Edges.make
+    short:
+      when: short.when ? true
+      run: short.run
+      move: short.move ? $end
+
 generic Edges.make, Type.isArray, ( array ) ->
   for edge in array
     Edge.make edge
@@ -112,53 +128,28 @@ Vertex =
     edges: Edges.make value
 
 
-Machine =
-  make: ( value ) -> 
-    _graph = Machine.format value
-    machine = 
-      name: value.name ? "anonymous"
-      graph: {}
-
-    for key in Reflect.ownKeys _graph
-      value = _graph[ key ]
-      machine.graph[ key ] = Vertex.make key, value
-    
-    machine
-
-  format: ( value ) ->
-    if Type.isObject value
-      graph = {}
-      for key in Reflect.ownKeys value.graph
-        graph[ key ] = value.graph[ key ]
-    else if Type.isArray value
-      graph = Machine.expand value
-    else
-      throw new Error "Talos machine representation is malformed"
-    
-    if !graph[ $start ]?
-      if graph.start?
-        graph[ $start ] = graph.start
-        delete graph.start
+Graph =
+  fromObject: ( object ) ->
+    if !object[ $start ]?
+      if object.start?
+        object[ $start ] = object.start
+        delete object.start
       else
         throw new Error "no start state defined for this machine"
 
-    if !graph[ $end ]?
-      if graph.end?
-        graph[ $end ] = graph.end
-        delete graph.end
+    if !object[ $end ]?
+      if object.end?
+        object[ $end ] = object.end
+        delete object.end
 
+    graph = {}
+    for key in Reflect.ownKeys object
+      graph[ key ] = Vertex.make key, object[ key ]
     graph
 
-  expand: ( fx ) ->
-    for f in fx when !f?
-      throw new Error "undefined item in function composition array"
-    
+  fromFunctionArray: ( fx ) -> 
     if fx.length == 0
-      return 
-        [ $start ]: 
-          end:
-            when: true
-            next: $end
+      return start: move: $end 
 
     names = {}
     getName = ( f ) ->
@@ -169,29 +160,86 @@ Machine =
         names[ name ] = 1
         name
 
-
-    graph = {}
-    cache = {}
+    graph = start: {}
+    previous = "start"
     for f, i in fx
-      current = cache.current ? getName f
-      if i == 0
-        cache.startName = current
-      
-      if i == fx.length - 1
-        next = $end
-      else
-        next = getName fx[ i + 1 ]
-
-      graph[ current ] = 
-        next:
-          when: true
-          run: f
-          move: next
-
-      cache.current = next
+      name = getName f
+      graph[ name ] = run: f
+      graph[ previous ].move = name
+      previous = name
     
-    graph[ $start ] = next: { when: true, move: cache.startName }
+    graph[ previous ].move = $end
     graph
+  
+  fromNamedFunctionArray: ( array ) ->   
+    if array.length == 0
+      return start: move: $end
+    
+    pairs = []
+    for name, i in array by 2
+      pairs.push [ name, array[i + 1] ]
+
+    graph = start: {}
+    previous = "start"
+    for pair in pairs
+      name = pair[ 0 ]
+      f = pair[ 1 ]
+      graph[ name ] = run: f
+      graph[ previous ].move = name
+      previous = name
+    
+    graph[ previous ].move = $end
+    graph
+
+
+isMachineDescription = ( value ) ->
+  (Type.isObject value) && 
+    (Type.isObject value.graph)
+
+isFunctionArray = ( value ) ->
+  if !Type.isArray value
+    return false
+  for item in value when !Type.isFunction item
+    return false
+  true
+
+isNamedFunctionArray = ( value ) ->
+  if !Type.isArray value
+    return false
+  for item, index in value
+    if index % 2 == 0
+      return false if !Type.isString item
+    else
+      return false if !Type.isFunction item
+  true
+
+Machine =
+  make: generic name: "talos: machine make"
+
+generic Machine.make, Type.isObject, ( graph ) ->
+  Machine.make { graph }
+
+generic Machine.make, Type.isString, Type.isObject, ( name, graph ) ->
+  Machine.make { name, graph }
+
+generic Machine.make, isMachineDescription, ( machine ) ->
+  name: machine.name ? "anonymous"
+  graph: Graph.fromObject machine.graph
+
+generic Machine.make, Type.isString, isMachineDescription, ( name, machine ) ->
+  Machine.make { name, graph: machine.graph }
+
+generic Machine.make, isNamedFunctionArray, ( ax ) ->
+  Machine.make { graph: Graph.fromNamedFunctionArray ax }
+
+generic Machine.make, isFunctionArray, ( fx ) ->
+  Machine.make { graph: Graph.fromFunctionArray fx }
+
+generic Machine.make, Type.isString, isNamedFunctionArray, ( name, ax ) ->
+  Machine.make { name, graph: Graph.fromNamedFunctionArray ax }
+
+generic Machine.make, Type.isString, isFunctionArray, ( name, fx ) ->
+  Machine.make { name, graph: Graph.fromFunctionArray fx }
 
 
 export { Machine, Vertex, Edges, Edge }

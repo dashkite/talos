@@ -1,6 +1,7 @@
 import { generic } from "@dashkite/joy/generic"
 import * as Fn from "@dashkite/joy/function"
 import * as Type from "@dashkite/joy/type"
+import * as It from "@dashkite/joy/iterable"
 import { Machine } from "./machine"
 import { Talos } from "./talos"
 import { isMachine, isIteratorKind, isGeneratorFunctionKind } from "./types"
@@ -112,6 +113,37 @@ flow = ( fx ) ->
       throw talos.error
     talos.context
 
+
+# Weaves N reactors into one reactor while using queuing to
+# preserve their inner and overall ordering.
+# We're also need to be careful regarding finite reactors that signal done.
+
+# TODO: This will eventually make its way into joy/iterable.
+
+weave = ( reactors ) ->
+  do ({ q } = {}) ->
+    q = It.Queue.create()
+    tracking = Array reactors.length
+    tracking.fill false
+    allDone = -> tracking.every ( done ) -> done == true
+    
+    for reactor, index in reactors
+      do ( reactor, index, { product } = {}) ->
+        loop
+          product = await reactor.next()
+          product.index = index
+          q.enqueue product
+          return if product.done == true
+  
+    loop 
+      product = await q.dequeue()
+      if product.done == true
+        tracking[ product.index ] = product.done
+        return if allDone()
+      else
+        yield product.value
+
+
 export * from "./states"
 export * from "./machine"
 export * from "./talos"
@@ -121,4 +153,5 @@ export {
   start
   run
   flow
+  weave
 }

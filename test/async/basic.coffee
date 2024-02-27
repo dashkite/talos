@@ -1,4 +1,7 @@
-import { Machine, Talos, $start, $end, start, run, flow } from "../../src/async"
+import { 
+  Machine, Talos, 
+  $start, $end,
+  start, run, flow, weave } from "../../src/async"
 import * as Type from "@dashkite/joy/type"
 import * as h from "../helpers"
 
@@ -73,6 +76,27 @@ test = ->
       h.assert talos.failure
       h.assert.equal $end, talos.state
       h.assert.equal "b", talos.previousState
+
+    h.test "weaves reactors", h.target "async", ->
+      a = ->
+        for x in [ "a", "b", "c" ]
+          await 1
+          yield x
+        return
+      b = ->
+        for x in [ "d", "e", "f" ]
+          await 1
+          yield x
+        return
+
+      results = []
+      for await x from weave [ a(), b() ]
+        results.push x
+      
+      # Woven result
+      h.assert.deepEqual results, 
+        [ "a", "d", "b", "e", "c", "f" ]
+
   ]
 
 export { test as basic }

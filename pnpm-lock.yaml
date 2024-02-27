@@ -20,8 +20,8 @@ devDependencies:
     specifier: ^0.1.4
     version: 0.1.4
   '@dashkite/genie':
-    specifier: ^0.8.1
-    version: 0.8.1
+    specifier: ^0.8.2
+    version: 0.8.2
   '@dashkite/genie-clean':
     specifier: link:../genie-clean
     version: link:../genie-clean
@@ -65,8 +65,8 @@ packages:
     resolution: {integrity: sha512-7O3HajSgWaie/kme1bcdXQnVsMXn4A5m9YOaxWnEZ8z9LCrnJ8BGnpTgFJUqSC4mv0Z/0NBcwTmeGCoEc9VYoA==}
     dev: true
 
-  /@dashkite/genie@0.8.1:
-    resolution: {integrity: sha512-qlZ2VYO0PGx1Bj6l9E44kWxWJ+WwfmjSMpCORJeruCfjEfkXQ00nxgRtv1vgJNvRUZGsE5hfQIdpBwBpK1JNcQ==}
+  /@dashkite/genie@0.8.2:
+    resolution: {integrity: sha512-vjCpeWVWHDBOiYpAKG4wet/EiMvQNYSajxi3N/lTk171+zw/9DZ1l0UUfzxD+zt7WHZdFjTMTNrS9xlq8jOUKA==}
     engines: {node: '>=20.0.0'}
     hasBin: true
     dependencies:

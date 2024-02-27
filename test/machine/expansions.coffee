@@ -4,6 +4,29 @@ import * as h from "../helpers"
 
 test = ->
   [
+    h.test "compact + strings", h.target "machine", ->
+      machine = Machine.make
+        start: "alpha"
+        alpha:
+          when: "beta"
+          move: "beta"
+        beta:
+          end: true
+
+      h.assert machine.graph[ $start ]?
+      edge = machine.graph[ $start ].edges[0]
+      h.assert edge.when() == true
+      h.assert !edge.run?
+      h.assert ( edge.move {} ) == "alpha"
+
+      edge = machine.graph[ "alpha" ].edges[0]
+      h.assert edge.when(false, "beta") == true
+      h.assert ( edge.move {} ) == "beta"
+
+      edge = machine.graph[ "beta" ].edges[0]
+      h.assert ( edge.move {} ) == $end
+
+
     h.test "compact + booleans", h.target "machine", ->
       machine = Machine.make
         start:

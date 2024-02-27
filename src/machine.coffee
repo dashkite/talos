@@ -13,7 +13,7 @@ areVertexEdges = ( x ) ->
 
 normalizeWhen = ( x ) ->
   if isState x
-    ( talos, event ) -> event == condition
+    ( talos, event ) -> event == x
   else if Type.isFunction x
     x
   else if Type.isBoolean x

@@ -1,6 +1,6 @@
 {
   "name": "@dashkite/talos",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "state machines with an emphasis on compositional flows",
   "keywords": [],
   "homepage": "https://github.com/dashkite/talos#readme",

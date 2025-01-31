@@ -31,8 +31,8 @@ class Talos
     @state = $end
 
   catch: ( error ) ->
-    @end()
     @error = error
+    @end()
 
 
 export {

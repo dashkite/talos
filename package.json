@@ -48,6 +48,7 @@
     "@dashkite/genie-coffee": "link:../genie-coffee",
     "@dashkite/genie-module": "link:../genie-module",
     "@dashkite/genie-release": "link:../genie-release",
+    "@dashkite/vista": "link:../vista",
     "panda-confidential": "^3.1.2"
   }
 }

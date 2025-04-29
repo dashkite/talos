@@ -118,7 +118,6 @@ flow = ( fx ) ->
 # preserve their inner and overall ordering.
 # We're also need to be careful regarding finite reactors that signal done.
 
-# TODO: This will eventually make its way into joy/iterable.
 
 weave = ( reactors ) ->
   do ({ q } = {}) ->

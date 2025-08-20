@@ -8,7 +8,7 @@ test = ( name, value ) ->
   if Array.isArray value
     amenTest name, value
   else
-    amenTest description: name, wait: false, value
+    amenTest description: name,  value
 
 targets = do ->
   _targets = ( process.env.targets?.split /\s+/ ) ? [ "all" ]
